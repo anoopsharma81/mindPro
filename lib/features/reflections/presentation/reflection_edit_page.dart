@@ -1,25 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../data/reflection_repository.dart';
 import '../data/reflection.dart';
+import '../../../common/widgets/gmc_domain_selector.dart';
+import '../../../common/widgets/phi_warning_dialog.dart';
+import '../../../common/widgets/help_tooltip.dart';
+// import '../../../common/widgets/voice_input_field.dart'; // Temporarily disabled until flutter pub get
+import '../../../common/utils/phi_detector.dart';
+import 'selfplay_runner.dart';
+import 'reflection_templates.dart';
 
-class ReflectionEditPage extends StatefulWidget {
+class ReflectionEditPage extends ConsumerStatefulWidget {
   final String? id;
   const ReflectionEditPage({super.key, this.id});
-  @override State<ReflectionEditPage> createState() => _ReflectionEditPageState();
+  @override ConsumerState<ReflectionEditPage> createState() => _ReflectionEditPageState();
 }
 
-class _ReflectionEditPageState extends State<ReflectionEditPage> {
-  final _repo = ReflectionRepository();
+class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
   final _title = TextEditingController();
   final _what = TextEditingController();
   final _soWhat = TextEditingController();
   final _nowWhat = TextEditingController();
   final _tags = TextEditingController();
+  List<int> _selectedDomains = [];
   Reflection? _model;
 
   Future<void> _load() async {
     if (widget.id == null) return;
-    final m = await _repo.get(widget.id!);
+    final repo = ref.read(reflectionRepositoryProvider);
+    final m = await repo.get(widget.id!);
     if (m != null){
       _model = m;
       _title.text = m.title;
@@ -27,6 +37,7 @@ class _ReflectionEditPageState extends State<ReflectionEditPage> {
       _soWhat.text = m.soWhat;
       _nowWhat.text = m.nowWhat;
       _tags.text = m.tags.join(', ');
+      _selectedDomains = m.domains ?? [];
       setState((){});
     }
   }
@@ -34,16 +45,26 @@ class _ReflectionEditPageState extends State<ReflectionEditPage> {
   @override void initState(){ super.initState(); _load(); }
 
   Future<void> _save() async {
+    // Check for PHI before saving
+    final combinedText = '${_title.text} ${_what.text} ${_soWhat.text} ${_nowWhat.text}';
+    
+    if (mounted && PhiDetector.containsPhi(combinedText)) {
+      final canContinue = await PhiWarningDialog.show(context, combinedText);
+      if (!canContinue) return; // User chose to review text
+    }
+    
+    final repo = ref.read(reflectionRepositoryProvider);
     final tags = _tags.text.split(',')
       .map((e)=>e.trim()).where((e)=>e.isNotEmpty).toList();
 
     if (_model == null) {
-      await _repo.create(
+      await repo.create(
         title: _title.text,
         what: _what.text,
         soWhat: _soWhat.text,
         nowWhat: _nowWhat.text,
         tags: tags,
+        domains: _selectedDomains.isEmpty ? null : _selectedDomains,
       );
     } else {
       final m = _model!.copyWith(
@@ -52,42 +73,242 @@ class _ReflectionEditPageState extends State<ReflectionEditPage> {
         soWhat: _soWhat.text,
         nowWhat: _nowWhat.text,
         tags: tags,
+        domains: _selectedDomains.isEmpty ? null : _selectedDomains,
       );
-      await _repo.update(m.id, m);
+      await repo.update(m.id, m);
     }
-    if (mounted) Navigator.of(context).pop();
+    if (mounted) context.go('/reflections');
   }
 
   Future<void> _delete() async {
     if (_model!=null){
-      await _repo.remove(_model!.id);
-      if(mounted) Navigator.of(context).pop();
+      final repo = ref.read(reflectionRepositoryProvider);
+      await repo.remove(_model!.id);
+      if(mounted) context.go('/reflections');
+    }
+  }
+
+  Future<void> _openSelfPlay() async {
+    // Save current state first
+    await _save();
+    
+    // Reload to get the saved reflection
+    if (widget.id != null) {
+      final repo = ref.read(reflectionRepositoryProvider);
+      final reflection = await repo.get(widget.id!);
+      
+      if (reflection != null && mounted) {
+        // Navigate to self-play runner
+        final improved = await Navigator.of(context).push<bool>(
+          MaterialPageRoute(
+            builder: (context) => SelfPlayRunner(
+              reflectionId: widget.id!,
+              reflection: reflection,
+            ),
+          ),
+        );
+        
+        // Reload if improved
+        if (improved == true) {
+          await _load();
+        }
+      }
+    }
+  }
+  
+  Future<void> _applyTemplate() async {
+    final template = await TemplatePickerDialog.show(context);
+    if (template != null && mounted) {
+      setState(() {
+        if (template.whatPrompt.isNotEmpty) _what.text = template.whatPrompt;
+        if (template.soWhatPrompt.isNotEmpty) _soWhat.text = template.soWhatPrompt;
+        if (template.nowWhatPrompt.isNotEmpty) _nowWhat.text = template.nowWhatPrompt;
+        if (template.suggestedDomains.isNotEmpty) {
+          _selectedDomains = List.from(template.suggestedDomains);
+        }
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Applied "${template.title}" template')),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final isEdit = widget.id != null;
+    final canRunSelfPlay = isEdit && 
+      _title.text.isNotEmpty && 
+      _what.text.isNotEmpty;
+    
     return Scaffold(
       appBar: AppBar(
         title: Text(isEdit? 'Edit Reflection' : 'New Reflection'),
-        actions: [ if (isEdit) IconButton(onPressed: _delete, icon: const Icon(Icons.delete)) ],
+        actions: [
+          if (!isEdit)
+            IconButton(
+              onPressed: _applyTemplate,
+              icon: const Icon(Icons.auto_stories),
+              tooltip: 'Use template',
+            ),
+          HelpButton(
+            title: 'Reflection Guide',
+            content: 'Use the What/So What/Now What framework to structure your reflection:\n\n'
+                '• What: Describe what happened objectively\n'
+                '• So What: Analyze the significance and your learning\n'
+                '• Now What: Identify actions for future practice\n\n'
+                'Select GMC domains to show which areas of practice this reflection addresses.',
+            tips: [
+              'Avoid patient identifiers - use "a patient" or age ranges',
+              'Focus on your learning, not the clinical details',
+              'Be specific about actions you\'ll take',
+            ],
+          ),
+          if (canRunSelfPlay)
+            IconButton(
+              onPressed: _openSelfPlay,
+              icon: const Icon(Icons.auto_awesome),
+              tooltip: 'Improve with AI',
+            ),
+          if (isEdit) 
+            IconButton(onPressed: _delete, icon: const Icon(Icons.delete)),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        child: Column(children: [
-          TextField(controller: _title, decoration: const InputDecoration(labelText: 'Title')),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+          TextField(
+            controller: _title,
+            decoration: const InputDecoration(
+              labelText: 'Title',
+              border: OutlineInputBorder(),
+            ),
+          ),
           const SizedBox(height: 12),
-          TextField(controller: _what, decoration: const InputDecoration(labelText: 'What')),
+          TextField(
+            controller: _what,
+            decoration: const InputDecoration(
+              labelText: 'What happened?',
+              border: OutlineInputBorder(),
+            ),
+            maxLines: 3,
+            minLines: 2,
+          ),
           const SizedBox(height: 12),
-          TextField(controller: _soWhat, decoration: const InputDecoration(labelText: 'So What')),
+          TextField(
+            controller: _soWhat,
+            decoration: const InputDecoration(
+              labelText: 'So what? (Analysis)',
+              border: OutlineInputBorder(),
+            ),
+            maxLines: 3,
+            minLines: 2,
+          ),
           const SizedBox(height: 12),
-          TextField(controller: _nowWhat, decoration: const InputDecoration(labelText: 'Now What')),
+          TextField(
+            controller: _nowWhat,
+            decoration: const InputDecoration(
+              labelText: 'Now what? (Action)',
+              border: OutlineInputBorder(),
+            ),
+            maxLines: 3,
+            minLines: 2,
+          ),
           const SizedBox(height: 12),
-          TextField(controller: _tags, decoration: const InputDecoration(labelText: 'Tags (comma separated)')),
-          const SizedBox(height: 24),
-          FilledButton(onPressed: _save, child: const Text('Save')),
-        ]),
+          TextField(
+            controller: _tags,
+            decoration: const InputDecoration(
+              labelText: 'Tags (comma separated)',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: 16),
+          GmcDomainSelector(
+            selectedDomains: _selectedDomains,
+            onChanged: (domains) {
+              setState(() {
+                _selectedDomains = domains;
+              });
+            },
+          ),
+          const SizedBox(height: 20),
+          FilledButton(
+            onPressed: _save,
+            child: const Text('Save'),
+          ),
+          if (canRunSelfPlay) ...[
+            const SizedBox(height: 12),
+            // AI Improvement Button
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.purple.shade400, Colors.blue.shade400],
+                ),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.purple.shade200,
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: _openSelfPlay,
+                  borderRadius: BorderRadius.circular(12),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 16,
+                      horizontal: 20,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.auto_awesome,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Improve with AI',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              'Get AI suggestions to enhance your reflection',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.9),
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 8),
+                        const Icon(
+                          Icons.arrow_forward,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+          const SizedBox(height: 16), // Bottom padding for scroll
+        ],
+        ),
       ),
     );
   }

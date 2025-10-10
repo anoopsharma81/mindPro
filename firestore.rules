@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if user is the owner
+    function isOwner(uid) { 
+      return request.auth != null && request.auth.uid == uid; 
+    }
+    
+    // User profiles - only the owner can access
+    match /profiles/{uid} {
+      allow read, update, delete: if isOwner(uid);
+      allow create: if request.auth != null && request.auth.uid == uid;
+      
+      // Year configurations - scoped to user
+      match /years/{year} {
+        allow read, write: if isOwner(uid);
+        
+        // Reflections - scoped to user and year
+        match /reflections/{rid} { 
+          allow read, write: if isOwner(uid); 
+        }
+        
+        // CPD entries - scoped to user and year
+        match /cpd/{cid} { 
+          allow read, write: if isOwner(uid); 
+        }
+      }
+    }
+    
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+

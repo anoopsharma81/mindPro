@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../cpd/data/cpd_repository.dart';
 import '../../cpd/data/cpd_entry.dart';
 
-class CpdEditPage extends StatefulWidget {
+class CpdEditPage extends ConsumerStatefulWidget {
   final String? id;
   const CpdEditPage({super.key, this.id});
-  @override State<CpdEditPage> createState() => _CpdEditPageState();
+  @override ConsumerState<CpdEditPage> createState() => _CpdEditPageState();
 }
 
-class _CpdEditPageState extends State<CpdEditPage> {
-  final _repo = CpdRepository();
+class _CpdEditPageState extends ConsumerState<CpdEditPage> {
   CpdEntry? _model;
   CpdType _type = CpdType.other;
   final _title = TextEditingController();
@@ -19,7 +20,8 @@ class _CpdEditPageState extends State<CpdEditPage> {
 
   Future<void> _load() async {
     if (widget.id == null) return;
-    final m=await _repo.get(widget.id!);
+    final repo = ref.read(cpdRepositoryProvider);
+    final m = await repo.get(widget.id!);
     if(m!=null){
       _model=m; _type=m.type; _title.text=m.title; _hours.text=m.hours.toString(); _date=m.date; _notes.text=m.notes??'';
       setState((){});
@@ -28,20 +30,22 @@ class _CpdEditPageState extends State<CpdEditPage> {
   @override void initState(){ super.initState(); _load(); }
 
   Future<void> _save() async {
+    final repo = ref.read(cpdRepositoryProvider);
     final h = double.tryParse(_hours.text) ?? 0;
     if (_model == null) {
-      await _repo.create(type: _type, title: _title.text, hours: h, date: _date, notes: _notes.text.isEmpty? null:_notes.text);
+      await repo.create(type: _type, title: _title.text, hours: h, date: _date, notes: _notes.text.isEmpty? null:_notes.text);
     } else {
       final m = _model!.copyWith(type: _type, title: _title.text, hours: h, date: _date, notes: _notes.text);
-      await _repo.update(m.id, m);
+      await repo.update(m.id, m);
     }
-    if (mounted) Navigator.of(context).pop();
+    if (mounted) context.go('/cpd');
   }
 
   Future<void> _delete() async {
     if(_model!=null){
-      await _repo.remove(_model!.id);
-      if(mounted) Navigator.of(context).pop();
+      final repo = ref.read(cpdRepositoryProvider);
+      await repo.remove(_model!.id);
+      if(mounted) context.go('/cpd');
     }
   }
 

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1083790628363",
+    "project_id": "metanoia-a3035",
+    "storage_bucket": "metanoia-a3035.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1083790628363:android:e42d61f21952047bc4590e",
+        "android_client_info": {
+          "package_name": "com.example.metanoia_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLbd4KuGL9pHt1ERBMQvgq0fyULnCrgkw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
