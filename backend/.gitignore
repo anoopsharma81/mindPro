@@ -1,0 +1,23 @@
+# Environment variables
+.env
+
+# Firebase service account key (sensitive!)
+firebase-service-account.json
+
+# Dependencies
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+
+
