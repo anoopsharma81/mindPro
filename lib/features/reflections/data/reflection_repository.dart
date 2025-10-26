@@ -103,6 +103,27 @@ class ReflectionRepository {
     return r;
   }
 
+  /// Save a fully-constructed reflection (useful for AI-extracted reflections)
+  Future<Reflection> save(Reflection reflection) async {
+    try {
+      // Save to Firestore
+      await _firestore.setDocument(
+        _firestore.reflectionsFor(_year).doc(reflection.id),
+        reflection.toJson(),
+      );
+      Logger.info('Reflection saved in Firestore: ${reflection.id}');
+    } catch (e, stack) {
+      Logger.error('Failed to save reflection in Firestore, saving to Hive', e, stack);
+      
+      // Fallback to Hive
+      final map = await KV.getMap(_key);
+      map[reflection.id] = reflection.toJson();
+      await KV.setMap(_key, map);
+    }
+    
+    return reflection;
+  }
+
   /// Update an existing reflection
   Future<Reflection?> update(String id, Reflection patch) async {
     final updated = patch.copyWith(updatedAt: DateTime.now());

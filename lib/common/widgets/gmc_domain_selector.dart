@@ -33,7 +33,10 @@ class GmcDomainSelector extends StatelessWidget {
           children: GmcDomain.values.map((domain) {
             final isSelected = selectedDomains.contains(domain.number);
             return FilterChip(
-              label: Text(domain.shortName),
+              label: Text(
+                domain.shortName,
+                style: const TextStyle(fontSize: 13),
+              ),
               selected: isSelected,
               onSelected: (selected) {
                 final newDomains = List<int>.from(selectedDomains);
@@ -58,6 +61,8 @@ class GmcDomainSelector extends StatelessWidget {
               ),
               selectedColor: domain.color.withOpacity(0.2),
               checkmarkColor: domain.color,
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              visualDensity: VisualDensity.compact,
             );
           }).toList(),
         ),
@@ -112,4 +117,8 @@ class GmcDomainChips extends StatelessWidget {
     );
   }
 }
+
+
+
+
 

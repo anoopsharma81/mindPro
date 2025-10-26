@@ -121,6 +121,71 @@ class ApiService {
       rethrow;
     }
   }
+  
+  /// Extract reflection from document/photo
+  /// POST /api/extract
+  Future<Map<String, dynamic>> extractFromDocument({
+    required String photoUrl,
+    required String source,
+    String? mimeType,
+  }) async {
+    try {
+      final response = await _dio.post(
+        '/extract',
+        data: {
+          'photoUrl': photoUrl,
+          'source': source,
+          'mimeType': mimeType,
+        },
+      );
+      return response.data as Map<String, dynamic>;
+    } catch (e, stack) {
+      Logger.error('Extract API call failed', e, stack);
+      rethrow;
+    }
+  }
+  
+  /// Transcribe audio using Whisper API
+  /// POST /api/reflections/transcribe
+  Future<Map<String, dynamic>> transcribeAudio({
+    required String audioUrl,
+  }) async {
+    try {
+      final response = await _dio.post(
+        '/reflections/transcribe',
+        data: {
+          'audioUrl': audioUrl,
+        },
+      );
+      return response.data as Map<String, dynamic>;
+    } catch (e, stack) {
+      Logger.error('Transcribe audio API call failed', e, stack);
+      rethrow;
+    }
+  }
+  
+  /// Structure transcription into reflection format
+  /// POST /api/reflections/structure
+  Future<Map<String, dynamic>> structureTranscription({
+    required String transcription,
+  }) async {
+    try {
+      final response = await _dio.post(
+        '/reflections/structure',
+        data: {
+          'transcription': transcription,
+        },
+      );
+      return response.data as Map<String, dynamic>;
+    } catch (e, stack) {
+      Logger.error('Structure transcription API call failed', e, stack);
+      rethrow;
+    }
+  }
 }
+
+
+
+
 
 

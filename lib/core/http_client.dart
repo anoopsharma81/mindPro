@@ -15,12 +15,15 @@ class HttpClient {
   static Dio _createDio() {
     final dio = Dio(BaseOptions(
       baseUrl: Env.apiBaseUrl,
-      connectTimeout: const Duration(seconds: 30),
-      receiveTimeout: const Duration(seconds: 30),
+      connectTimeout: const Duration(seconds: 30), // 30 seconds for connection
+      receiveTimeout: const Duration(seconds: 600), // 10 minutes for AI processing (Whisper can be slow)
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
+        'Connection': 'keep-alive', // Use keep-alive for better connection management
       },
+      // Disable persistent connections which might cause issues
+      persistentConnection: false,
     ));
     
     // Request interceptor - add auth token
@@ -30,9 +33,14 @@ class HttpClient {
           final user = FirebaseAuth.instance.currentUser;
           if (user != null) {
             final token = await user.getIdToken();
-            if (token != null) {
+            if (token != null && token.isNotEmpty) {
               options.headers['Authorization'] = 'Bearer $token';
+              Logger.debug('Added auth token to request');
+            } else {
+              Logger.warning('User has no token, request may fail');
             }
+          } else {
+            Logger.warning('No current user, request may fail');
           }
         } catch (e, stack) {
           Logger.error('Failed to get auth token', e, stack);
@@ -61,5 +69,9 @@ class HttpClient {
     _instance = null;
   }
 }
+
+
+
+
 
 

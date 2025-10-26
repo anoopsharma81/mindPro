@@ -30,7 +30,7 @@ class Env {
   // API Backend
   static const String apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://localhost:3000/api',
+    defaultValue: 'http://Anups-Laptop.local:3001/api',
   );
   
   // Sentry
@@ -49,5 +49,6 @@ class Env {
   static bool get isStaging => environment == 'staging';
   static bool get isProd => environment == 'prod';
 }
+
 
 

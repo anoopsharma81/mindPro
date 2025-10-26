@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Metanoia Flutter</string>
+	<string>Metanoia</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -65,5 +65,14 @@
 	<string>We need access to your photo library to import CPD certificates and training documentation.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>We need permission to save exported documents to your photo library.</string>
+	<!-- Microphone Permission for Voice Notes -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>We need microphone access to record voice notes for creating reflections.</string>
+	<!-- Additional Audio Session Permissions -->
+	<key>NSAudioSessionUsageDescription</key>
+	<string>We need audio session access to record voice notes.</string>
+	<!-- Speech Recognition Permission for Live Transcription -->
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>We need speech recognition access to provide live transcription while you record voice notes.</string>
 </dict>
 </plist>

@@ -84,8 +84,16 @@ Now what (action): ${widget.reflection.nowWhat}
     try {
       final repo = ref.read(reflectionRepositoryProvider);
       
-      // Update reflection with AI results
+      // Get improved text from backend response
+      final improvedText = _result!['improved'] as String? ?? '';
+      
+      // Parse improved text into What/So What/Now What sections
+      // For now, just put all improved text in "what" field
+      // TODO: Parse structured output
+      
+      // Update reflection with AI-improved text
       final updated = widget.reflection.copyWith(
+        what: improvedText, // Put improved text in "what" field
         score: (_result!['score'] as num?)?.toDouble(),
         iterations: _result!['history'] as List<Map<String, dynamic>>?,
         rating: _userRating,
@@ -105,6 +113,9 @@ Now what (action): ${widget.reflection.nowWhat}
       }
       
       if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('AI improvements saved successfully!')),
+        );
         Navigator.of(context).pop(true); // Return to reflection editor
       }
     } catch (e, stack) {
@@ -252,23 +263,98 @@ Now what (action): ${widget.reflection.nowWhat}
                       const SizedBox(height: 12),
                       if (_result!['score'] != null) ...[
                         Text(
-                          'Quality Score: ${((_result!['score'] as num) * 100).toStringAsFixed(0)}%',
+                          'Quality Score: ${((_result!['score'] as num) * 10).toStringAsFixed(0)}%',
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        const SizedBox(height: 8),
-                      ],
-                      if (_result!['finalText'] != null) ...[
-                        const Text(
-                          'Improved Text:',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(_result!['finalText'] as String),
+                        const SizedBox(height: 16),
                       ],
                     ],
                   ),
                 ),
               ),
+              const SizedBox(height: 16),
+              
+              // Before/After Comparison
+              if (_result!['improved'] != null) ...[
+                // Original Text
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.article_outlined, color: Colors.grey[600]),
+                            const SizedBox(width: 8),
+                            Text(
+                              'BEFORE (Original)',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            '''${widget.reflection.what}
+
+${widget.reflection.soWhat.isNotEmpty ? 'Analysis: ${widget.reflection.soWhat}\n' : ''}${widget.reflection.nowWhat.isNotEmpty ? 'Action: ${widget.reflection.nowWhat}' : ''}'''.trim(),
+                            style: TextStyle(color: Colors.grey[700]),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                
+                // Improved Text
+                Card(
+                  color: Colors.green[50],
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.auto_awesome, color: Colors.green[700]),
+                            const SizedBox(width: 8),
+                            Text(
+                              'AFTER (AI Improved)',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green[700],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.green[200]!),
+                          ),
+                          child: Text(
+                            _result!['improved'] as String,
+                            style: const TextStyle(fontSize: 15),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
               const SizedBox(height: 24),
               
               // Rating widget
@@ -282,11 +368,30 @@ Now what (action): ${widget.reflection.nowWhat}
               ),
               const SizedBox(height: 24),
               
-              // Accept button
-              FilledButton.icon(
-                onPressed: _acceptAndSave,
-                icon: const Icon(Icons.check),
-                label: const Text('Accept & Save'),
+              // Action buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).pop(false); // Return without saving
+                      },
+                      icon: const Icon(Icons.close),
+                      label: const Text('Reject Changes'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.grey[700],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton.icon(
+                      onPressed: _acceptAndSave,
+                      icon: const Icon(Icons.check),
+                      label: const Text('Accept & Save'),
+                    ),
+                  ),
+                ],
               ),
             ],
           ],
@@ -295,4 +400,5 @@ Now what (action): ${widget.reflection.nowWhat}
     );
   }
 }
+
 

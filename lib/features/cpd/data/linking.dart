@@ -1,6 +1,4 @@
-import '../data/cpd_entry.dart';
-import '../data/cpd_repository.dart';
-import '../../reflections/data/reflection.dart';
+import 'cpd_repository.dart';
 import '../../reflections/data/reflection_repository.dart';
 
 class LinkService {

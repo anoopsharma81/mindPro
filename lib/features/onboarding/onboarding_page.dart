@@ -19,6 +19,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
       description: 'Your NHS appraisal companion for reflective practice and professional development.',
     ),
     OnboardingStep(
+      icon: Icons.auto_awesome,
+      title: 'AI-Powered Reflections',
+      description: 'Snap a photo of your notes or upload a document - AI creates a structured reflection for you in seconds!',
+      gradient: LinearGradient(
+        colors: [Color(0xFF9C27B0), Color(0xFF2196F3)],
+      ),
+    ),
+    OnboardingStep(
       icon: Icons.psychology,
       title: 'Structured Reflections',
       description: 'Use the What/So What/Now What framework to document meaningful learning experiences.',
@@ -108,11 +116,32 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          step.icon,
-                          size: 120,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+                        // Icon with optional gradient
+                        step.gradient != null
+                            ? Container(
+                                padding: const EdgeInsets.all(24),
+                                decoration: BoxDecoration(
+                                  gradient: step.gradient,
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.purple.shade200,
+                                      blurRadius: 20,
+                                      spreadRadius: 5,
+                                    ),
+                                  ],
+                                ),
+                                child: Icon(
+                                  step.icon,
+                                  size: 72,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : Icon(
+                                step.icon,
+                                size: 120,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
                         const SizedBox(height: 48),
                         Text(
                           step.title,
@@ -185,11 +214,16 @@ class OnboardingStep {
   final IconData icon;
   final String title;
   final String description;
+  final Gradient? gradient;
   
   OnboardingStep({
     required this.icon,
     required this.title,
     required this.description,
+    this.gradient,
   });
 }
+
+
+
 

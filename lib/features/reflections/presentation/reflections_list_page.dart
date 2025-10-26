@@ -5,6 +5,9 @@ import '../data/reflection_repository.dart';
 import '../data/reflection.dart';
 import '../../../common/widgets/gmc_domain_selector.dart';
 import '../../../common/widgets/empty_state.dart';
+import 'widgets/document_source_selector.dart';
+import 'reflection_from_document_page.dart';
+import 'voice_note_flow_page.dart';
 
 class ReflectionsListPage extends ConsumerStatefulWidget {
   const ReflectionsListPage({super.key});
@@ -24,6 +27,130 @@ class _ReflectionsListPageState extends ConsumerState<ReflectionsListPage> {
 
   @override void initState(){ super.initState(); _load(); }
 
+  void _showCreateOptions() {
+    // Capture the stable context from the widget
+    final navigatorContext = context;
+    
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Theme.of(sheetContext).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text(
+              'Create Reflection',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            
+            // AI option
+            ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.purple.shade400, Colors.blue.shade400],
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.auto_awesome, color: Colors.white),
+              ),
+              title: const Text('From Document/Photo (AI)'),
+              subtitle: const Text('Snap or upload, AI creates draft'),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                DocumentSourceSelector.show(
+                  navigatorContext,
+                  onTakePhoto: () {
+                    Navigator.push(
+                      navigatorContext,
+                      MaterialPageRoute(
+                        builder: (context) => const ReflectionFromDocumentPage(
+                          sourceType: 'camera',
+                        ),
+                      ),
+                    );
+                  },
+                  onChooseGallery: () {
+                    Navigator.push(
+                      navigatorContext,
+                      MaterialPageRoute(
+                        builder: (context) => const ReflectionFromDocumentPage(
+                          sourceType: 'gallery',
+                        ),
+                      ),
+                    );
+                  },
+                  onUploadDocument: () {
+                    Navigator.push(
+                      navigatorContext,
+                      MaterialPageRoute(
+                        builder: (context) => const ReflectionFromDocumentPage(
+                          sourceType: 'document',
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+            const Divider(),
+            
+            // Voice note option
+            ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(Icons.mic, color: Colors.red.shade700),
+              ),
+              title: const Text('From Voice Note'),
+              subtitle: const Text('Record and transcribe'),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                Navigator.push(
+                  navigatorContext,
+                  MaterialPageRoute(
+                    builder: (context) => const VoiceNoteFlowPage(),
+                  ),
+                );
+              },
+            ),
+            const Divider(),
+            
+            // Manual option
+            ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.edit, color: Colors.grey),
+              ),
+              title: const Text('From Scratch'),
+              subtitle: const Text('Type manually'),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                navigatorContext.go('/reflections/new');
+              },
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,9 +161,32 @@ class _ReflectionsListPageState extends ConsumerState<ReflectionsListPage> {
           onPressed: () => context.go('/'),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: ()=>context.go('/reflections/new'),
-        child: const Icon(Icons.add),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          // Voice note FAB (quick access)
+          FloatingActionButton(
+            mini: true,
+            heroTag: 'voice',
+            backgroundColor: Colors.red.shade700,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const VoiceNoteFlowPage(),
+                ),
+              );
+            },
+            child: const Icon(Icons.mic, color: Colors.white),
+          ),
+          const SizedBox(height: 16),
+          // Main add FAB
+          FloatingActionButton(
+            heroTag: 'add',
+            onPressed: _showCreateOptions,
+            child: const Icon(Icons.add),
+          ),
+        ],
       ),
       body: Column(children: [
         // AI Feature Banner

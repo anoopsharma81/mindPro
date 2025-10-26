@@ -82,15 +82,25 @@ class _CpdListPageState extends ConsumerState<CpdListPage> {
                       child: DropdownButtonFormField<int?>(
                         value: _filterDomain,
                         decoration: const InputDecoration(
-                          labelText: 'Filter by Domain',
+                          labelText: 'Domain',
                           border: OutlineInputBorder(),
                           isDense: true,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                         ),
+                        style: const TextStyle(fontSize: 12, color: Colors.black),
                         items: [
-                          const DropdownMenuItem(value: null, child: Text('All Domains')),
+                          const DropdownMenuItem(
+                            value: null,
+                            child: Text('All', style: TextStyle(fontSize: 12, color: Colors.black)),
+                          ),
                           ...GmcDomain.values.map((d) => DropdownMenuItem(
                             value: d.number,
-                            child: Text(d.shortName),
+                            child: Text(
+                              '${d.number}: ${d.shortName}',
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: const TextStyle(fontSize: 12, color: Colors.black),
+                            ),
                           )),
                         ],
                         onChanged: (value) {
@@ -107,15 +117,25 @@ class _CpdListPageState extends ConsumerState<CpdListPage> {
                       child: DropdownButtonFormField<CpdType?>(
                         value: _filterType,
                         decoration: const InputDecoration(
-                          labelText: 'Filter by Type',
+                          labelText: 'Type',
                           border: OutlineInputBorder(),
                           isDense: true,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                         ),
+                        style: const TextStyle(fontSize: 12, color: Colors.black),
                         items: [
-                          const DropdownMenuItem(value: null, child: Text('All Types')),
+                          const DropdownMenuItem(
+                            value: null,
+                            child: Text('All', style: TextStyle(fontSize: 12, color: Colors.black)),
+                          ),
                           ...CpdType.values.map((t) => DropdownMenuItem(
                             value: t,
-                            child: Text(t.name),
+                            child: Text(
+                              t.name,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: const TextStyle(fontSize: 12, color: Colors.black),
+                            ),
                           )),
                         ],
                         onChanged: (value) {

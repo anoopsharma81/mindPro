@@ -141,3 +141,7 @@ All foundation features working:
 
 **The app is stable and ready to use with email/password authentication.** 🎉
 
+
+
+
+

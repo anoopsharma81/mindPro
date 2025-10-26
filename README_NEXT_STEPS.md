@@ -290,3 +290,7 @@ Questions about implementation? Check:
 
 **You're ready to test Phase 1! Deploy those security rules and run the app.** 🚀
 
+
+
+
+

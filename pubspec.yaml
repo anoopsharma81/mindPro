@@ -1,5 +1,5 @@
 name: metanoia_flutter
-description: "A new Flutter project."
+description: "NHS appraisal made easier - guided reflections and CPD tracking for doctors."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -38,7 +38,7 @@ dependencies:
   go_router: ^16.2.4
   hive: ^2.2.3
   hive_flutter: ^1.1.0
-  share_plus: ^12.0.0
+  share_plus: ^10.0.3  # Downgraded from 12.0.0 due to Kotlin 2.2.0 compatibility issue
   uuid: ^4.5.1
   intl: ^0.20.2
   file_saver: ^0.3.1
@@ -49,6 +49,7 @@ dependencies:
   firebase_auth: ^5.3.4
   cloud_firestore: ^5.5.2
   firebase_storage: ^12.3.8
+  cloud_functions: ^5.1.4
   
   # Authentication providers
   google_sign_in: ^6.2.2
@@ -75,8 +76,19 @@ dependencies:
   # Image picker for CPD import (Feature 4)
   image_picker: ^1.1.2
   
+  # Document picker for AI extraction
+  file_picker: ^8.1.2
+  
+  # Audio recording and playback for voice notes
+  record: ^5.1.2
+  audioplayers: ^5.2.1
+  
   # Observability
-  sentry_flutter: ^8.11.0
+  # sentry_flutter: ^8.11.0  # Temporarily disabled - uses package_info_plus 9.0.0 with Kotlin 2.2.0
+
+# Dependency overrides to fix version conflicts
+dependency_overrides:
+  record_linux: ^1.0.0  # Fix for RecordLinux compilation error
 
 dev_dependencies:
   flutter_test:

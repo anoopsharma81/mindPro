@@ -10,6 +10,7 @@ import '../../../common/widgets/help_tooltip.dart';
 import '../../../common/utils/phi_detector.dart';
 import 'selfplay_runner.dart';
 import 'reflection_templates.dart';
+import 'widgets/audio_player_widget.dart';
 
 class ReflectionEditPage extends ConsumerStatefulWidget {
   final String? id;
@@ -86,6 +87,33 @@ class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
       await repo.remove(_model!.id);
       if(mounted) context.go('/reflections');
     }
+  }
+  
+  void _exitWithoutSaving() {
+    // Show confirmation dialog
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Exit without saving?'),
+        content: const Text('Any unsaved changes will be lost.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.pop(context); // Close dialog
+              context.go('/reflections'); // Exit page
+            },
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            child: const Text('Exit'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _openSelfPlay() async {
@@ -169,8 +197,43 @@ class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
               icon: const Icon(Icons.auto_awesome),
               tooltip: 'Improve with AI',
             ),
-          if (isEdit) 
-            IconButton(onPressed: _delete, icon: const Icon(Icons.delete)),
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert),
+            tooltip: 'More options',
+            onSelected: (value) {
+              switch (value) {
+                case 'exit':
+                  _exitWithoutSaving();
+                  break;
+                case 'delete':
+                  if (isEdit) _delete();
+                  break;
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'exit',
+                child: Row(
+                  children: [
+                    Icon(Icons.exit_to_app, size: 20),
+                    SizedBox(width: 12),
+                    Text('Exit without saving'),
+                  ],
+                ),
+              ),
+              if (isEdit)
+                const PopupMenuItem(
+                  value: 'delete',
+                  child: Row(
+                    children: [
+                      Icon(Icons.delete, size: 20, color: Colors.red),
+                      SizedBox(width: 12),
+                      Text('Delete reflection', style: TextStyle(color: Colors.red)),
+                    ],
+                  ),
+                ),
+            ],
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -178,6 +241,39 @@ class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+          // Audio player if audio exists
+          if (_model?.audioUrl != null) ...[
+            AudioPlayerWidget(
+              audioUrl: _model!.audioUrl!,
+              duration: _model!.audioDurationSeconds,
+            ),
+            const SizedBox(height: 16),
+            // Transcription info
+            if (_model!.transcriptionText != null)
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.mic, size: 16, color: Colors.blue.shade700),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Voice Note • ${_model!.transcriptionMethod ?? "transcribed"}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.blue.shade700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            const SizedBox(height: 16),
+          ],
           TextField(
             controller: _title,
             decoration: const InputDecoration(
@@ -273,25 +369,30 @@ class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
                           size: 24,
                         ),
                         const SizedBox(width: 12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Improve with AI',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text(
+                                'Improve with AI',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            Text(
-                              'Get AI suggestions to enhance your reflection',
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.9),
-                                fontSize: 12,
+                              Text(
+                                'Get AI suggestions to enhance reflection',
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.9),
+                                  fontSize: 11,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                         const SizedBox(width: 8),
                         const Icon(

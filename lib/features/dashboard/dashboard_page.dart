@@ -28,22 +28,29 @@ class DashboardPage extends ConsumerWidget {
         actions: [
           // Year selector
           availableYears.when(
-            data: (years) => DropdownButton<String>(
-              value: selectedYear,
-              underline: const SizedBox(),
-              items: years.map((year) {
-                return DropdownMenuItem(value: year, child: Text(year));
-              }).toList(),
-              onChanged: (year) {
-                if (year != null) {
-                  ref.read(selectedYearProvider.notifier).setYear(year);
-                }
-              },
+            data: (years) => Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: DropdownButton<String>(
+                value: selectedYear,
+                underline: const SizedBox(),
+                isDense: true,
+                items: years.map((year) {
+                  return DropdownMenuItem(
+                    value: year,
+                    child: Text(year, style: const TextStyle(fontSize: 14)),
+                  );
+                }).toList(),
+                onChanged: (year) {
+                  if (year != null) {
+                    ref.read(selectedYearProvider.notifier).setYear(year);
+                  }
+                },
+              ),
             ),
             loading: () => const SizedBox.shrink(),
             error: (_, __) => const SizedBox.shrink(),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 4),
           
           // Settings button
           IconButton(
