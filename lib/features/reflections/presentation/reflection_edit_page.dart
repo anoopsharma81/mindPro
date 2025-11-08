@@ -288,8 +288,8 @@ class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
               labelText: 'What happened?',
               border: OutlineInputBorder(),
             ),
-            maxLines: 3,
-            minLines: 2,
+            maxLines: 6,
+            minLines: 4,
           ),
           const SizedBox(height: 12),
           TextField(
@@ -298,8 +298,8 @@ class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
               labelText: 'So what? (Analysis)',
               border: OutlineInputBorder(),
             ),
-            maxLines: 3,
-            minLines: 2,
+            maxLines: 6,
+            minLines: 4,
           ),
           const SizedBox(height: 12),
           TextField(
@@ -308,8 +308,8 @@ class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
               labelText: 'Now what? (Action)',
               border: OutlineInputBorder(),
             ),
-            maxLines: 3,
-            minLines: 2,
+            maxLines: 6,
+            minLines: 4,
           ),
           const SizedBox(height: 12),
           TextField(

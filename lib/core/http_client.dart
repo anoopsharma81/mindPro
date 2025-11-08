@@ -14,7 +14,7 @@ class HttpClient {
   
   static Dio _createDio() {
     final dio = Dio(BaseOptions(
-      baseUrl: Env.apiBaseUrl,
+      baseUrl: Env.getApiUrl(),
       connectTimeout: const Duration(seconds: 30), // 30 seconds for connection
       receiveTimeout: const Duration(seconds: 600), // 10 minutes for AI processing (Whisper can be slow)
       headers: {

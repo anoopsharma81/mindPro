@@ -1,0 +1,27 @@
+Analyze this clinical case using the clinical reasoning framework:
+
+Title: {{title}}
+Year: {{year}}
+
+Clinical Case:
+{{context}}
+
+Structure your analysis as:
+
+1. INPUT
+[Summarize key clinical information presented]
+
+2. PATTERN RECOGNITION
+[Describe the thinking approach used - pattern recognition, hypothetico-deductive reasoning, systematic approach]
+
+3. ANALYTICAL REASONING
+[Systematic analysis, differential diagnosis, key diagnostic features]
+
+4. BIAS FILTER
+[Identify potential cognitive biases and how to avoid them]
+
+5. OUTPUT
+[Clinical decision, learning points, and future approach]
+
+Provide clear, educational insights that improve clinical reasoning.
+

@@ -1,0 +1,10 @@
+Improve this NHS reflection:
+
+Title: {{title}}
+Year: {{year}}
+
+Original reflection:
+{{context}}
+
+Enhance it using the "What? So what? Now what?" framework while keeping the doctor's authentic voice.
+

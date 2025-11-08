@@ -1,0 +1,4 @@
+Structure this voice transcription into a reflection:
+
+{{transcription}}
+

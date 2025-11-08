@@ -1,37 +1,14 @@
 {
+  "functions": {
+    "source": "functions",
+    "runtime": "nodejs18",
+    "predeploy": [
+      "npm --prefix \"$RESOURCE_DIR\" run lint",
+      "npm --prefix \"$RESOURCE_DIR\" run build"
+    ]
+  },
   "firestore": {
-    "rules": "firestore.rules"
-  },
-  "storage": {
-    "rules": "storage.rules"
-  },
-  "flutter": {
-    "platforms": {
-      "android": {
-        "default": {
-          "projectId": "metanoia-a3035",
-          "appId": "1:1083790628363:android:e42d61f21952047bc4590e",
-          "fileOutput": "android/app/google-services.json"
-        }
-      },
-      "ios": {
-        "default": {
-          "projectId": "metanoia-a3035",
-          "appId": "1:1083790628363:ios:3bea9c1aba4b9b3ec4590e",
-          "uploadDebugSymbols": false,
-          "fileOutput": "ios/Runner/GoogleService-Info.plist"
-        }
-      },
-      "dart": {
-        "lib/firebase_options.dart": {
-          "projectId": "metanoia-a3035",
-          "configurations": {
-            "android": "1:1083790628363:android:e42d61f21952047bc4590e",
-            "ios": "1:1083790628363:ios:3bea9c1aba4b9b3ec4590e",
-            "web": "1:1083790628363:web:382a41969e9346e8c4590e"
-          }
-        }
-      }
-    }
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
   }
 }

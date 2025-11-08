@@ -1,0 +1,4 @@
+Extract reflection content from this {{source}}. If it's handwritten notes, certificates, or learning materials, create a structured reflection from it.
+
+[Image will be attached separately]
+

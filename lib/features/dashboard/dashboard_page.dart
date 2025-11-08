@@ -93,39 +93,9 @@ class DashboardPage extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 8),
-            Row(
-              children: [
-                const Expanded(
-                  child: Text(
-                    'Transform learning into understanding and reflection',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Colors.purple.shade400, Colors.blue.shade400],
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.auto_awesome, color: Colors.white, size: 16),
-                      SizedBox(width: 4),
-                      Text(
-                        'AI-Powered',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+            const Text(
+              'Transform learning into understanding and reflection',
+              style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 20),
             

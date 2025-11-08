@@ -28,10 +28,28 @@ class Env {
   );
   
   // API Backend
+  // Production: Use Firebase Functions
+  // Development: Use local server for faster iteration
   static const String apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://Anups-Laptop.local:3001/api',
+    defaultValue: 'https://YOUR_REGION-YOUR_PROJECT.cloudfunctions.net/api',
   );
+  
+  // Helper to get the correct API URL based on environment
+  static String getApiUrl() {
+    // If custom API base URL is provided, use it
+    if (apiBaseUrl != 'https://YOUR_REGION-YOUR_PROJECT.cloudfunctions.net/api') {
+      return apiBaseUrl;
+    }
+    
+    // Use local development server for dev
+    if (isDev) {
+      return 'http://Anups-Laptop.local:3001/api';
+    }
+    
+    // Use Firebase Functions for production
+    return 'https://YOUR_REGION-YOUR_PROJECT.cloudfunctions.net/api';
+  }
   
   // Sentry
   static const String sentryDsn = String.fromEnvironment(

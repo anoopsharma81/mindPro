@@ -183,7 +183,7 @@ Your task: Analyze this clinical case using a structured clinical reasoning fram
 
 Framework to use:
 1. INPUT - What clinical information was presented
-2. COGNITIVE PROCESS - How the doctor approached the problem
+2. PATTERN RECOGNITION - How the doctor approached the problem
 3. ANALYTICAL REASONING - Systematic analysis and differential diagnosis
 4. BIAS FILTER - Identify potential cognitive biases (anchoring, confirmation bias, premature closure, etc.)
 5. OUTPUT - Clinical decision and learning points
@@ -215,8 +215,8 @@ Structure your analysis as:
 1. INPUT
 [Summarize key clinical information presented]
 
-2. COGNITIVE PROCESS
-[Describe the thinking approach used]
+2. PATTERN RECOGNITION
+[Describe the thinking approach used - pattern recognition, hypothetico-deductive reasoning, systematic approach]
 
 3. ANALYTICAL REASONING
 [Systematic analysis, differential diagnosis, key diagnostic features]
