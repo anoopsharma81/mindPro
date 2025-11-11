@@ -178,6 +178,7 @@ class TemplatePickerDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      backgroundColor: Colors.white,
       child: Container(
         constraints: const BoxConstraints(maxWidth: 600, maxHeight: 700),
         child: Column(
@@ -186,7 +187,7 @@ class TemplatePickerDialog extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
-                  const Icon(Icons.auto_stories, size: 28),
+                  const Icon(Icons.auto_stories, size: 28, color: Colors.black),
                   const SizedBox(width: 12),
                   const Expanded(
                     child: Column(
@@ -197,17 +198,21 @@ class TemplatePickerDialog extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
+                            color: Colors.black,
                           ),
                         ),
                         Text(
                           'Start with a guided framework',
-                          style: TextStyle(fontSize: 12),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.black,
+                          ),
                         ),
                       ],
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close),
+                    icon: const Icon(Icons.close, color: Colors.black),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                 ],
@@ -221,6 +226,7 @@ class TemplatePickerDialog extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final template = ReflectionTemplates.templates[index];
                   return Card(
+                    color: Colors.white,
                     margin: const EdgeInsets.symmetric(
                       horizontal: 8,
                       vertical: 4,
@@ -233,9 +239,15 @@ class TemplatePickerDialog extends StatelessWidget {
                       ),
                       title: Text(
                         template.title,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                       ),
-                      subtitle: Text(template.description),
+                      subtitle: Text(
+                        template.description,
+                        style: const TextStyle(color: Colors.black),
+                      ),
                       onTap: () => Navigator.of(context).pop(template),
                     ),
                   );

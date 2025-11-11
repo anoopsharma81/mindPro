@@ -19,23 +19,30 @@ class PhiWarningDialog extends StatelessWidget {
     final warningMessage = PhiDetector.getWarningMessage(detectedPhi);
     
     return AlertDialog(
+      backgroundColor: Colors.white,
       icon: Icon(
         Icons.warning_amber_rounded,
         color: Theme.of(context).colorScheme.error,
         size: 48,
       ),
-      title: const Text('Patient Information Warning'),
+      title: const Text(
+        'Patient Information Warning',
+        style: TextStyle(color: Colors.black),
+      ),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(warningMessage),
+            Text(
+              warningMessage,
+              style: const TextStyle(color: Colors.black),
+            ),
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.errorContainer,
+                color: Colors.red.shade50,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
@@ -46,7 +53,7 @@ class PhiWarningDialog extends StatelessWidget {
                       Icon(
                         Icons.info_outline,
                         size: 20,
-                        color: Theme.of(context).colorScheme.error,
+                        color: Colors.red.shade700,
                       ),
                       const SizedBox(width: 8),
                       Expanded(
@@ -54,7 +61,7 @@ class PhiWarningDialog extends StatelessWidget {
                           'Data Protection Notice',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.error,
+                            color: Colors.red.shade700,
                           ),
                         ),
                       ),
@@ -65,7 +72,10 @@ class PhiWarningDialog extends StatelessWidget {
                     'Under GDPR and NHS Information Governance requirements, '
                     'reflections must not contain patient identifiable information. '
                     'This protects patient privacy and ensures compliance.',
-                    style: TextStyle(fontSize: 12),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.black,
+                    ),
                   ),
                 ],
               ),

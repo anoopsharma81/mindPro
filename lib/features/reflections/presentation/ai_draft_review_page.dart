@@ -142,11 +142,16 @@ class _AiDraftReviewPageState extends ConsumerState<AiDraftReviewPage> {
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: const Text('About AI Extraction'),
+                  backgroundColor: Colors.white,
+                  title: const Text(
+                    'About AI Extraction',
+                    style: TextStyle(color: Colors.black),
+                  ),
                   content: const Text(
                     'AI has analyzed your content and created a structured reflection. '
                     'Please review and edit as needed before saving. '
                     'Always check for patient-identifiable information (PHI).',
+                    style: TextStyle(color: Colors.black),
                   ),
                   actions: [
                     TextButton(
@@ -184,18 +189,18 @@ class _AiDraftReviewPageState extends ConsumerState<AiDraftReviewPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'AI-Generated Draft',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Colors.purple.shade900,
+                            color: Colors.black,
                           ),
                         ),
                         Text(
                           'Confidence: ${(confidence * 100).toStringAsFixed(0)}% • Review and edit as needed',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12,
-                            color: Colors.purple.shade700,
+                            color: Colors.black,
                           ),
                         ),
                       ],

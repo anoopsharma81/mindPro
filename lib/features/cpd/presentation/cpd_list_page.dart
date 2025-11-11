@@ -6,6 +6,7 @@ import '../../cpd/data/cpd_entry.dart';
 import '../../../common/widgets/gmc_domain_selector.dart';
 import '../../../common/widgets/empty_state.dart';
 import '../../../common/models/gmc_domain.dart';
+import '../../../shared/widgets/bottom_nav_bar.dart';
 
 class CpdListPage extends ConsumerStatefulWidget {
   const CpdListPage({super.key});
@@ -58,15 +59,16 @@ class _CpdListPageState extends ConsumerState<CpdListPage> {
         ),
         actions: [
           IconButton(
+            icon: const Icon(Icons.add_circle_outline),
+            onPressed: () => context.go('/cpd/new'),
+            tooltip: 'Add CPD',
+          ),
+          IconButton(
             icon: const Icon(Icons.file_upload),
             onPressed: () => context.go('/cpd/import'),
             tooltip: 'Import CPD',
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: ()=>context.go('/cpd/new'),
-        child: const Icon(Icons.add),
       ),
       body: Column(
         children: [
@@ -151,7 +153,7 @@ class _CpdListPageState extends ConsumerState<CpdListPage> {
                 const SizedBox(height: 8),
                 // Total hours display
                 Card(
-                  color: Theme.of(context).colorScheme.primaryContainer,
+                  color: Colors.white,
                   child: Padding(
                     padding: const EdgeInsets.all(12),
                     child: Row(
@@ -170,7 +172,10 @@ class _CpdListPageState extends ConsumerState<CpdListPage> {
                         const Spacer(),
                         Text(
                           '${_filteredItems.length} ${_filteredItems.length == 1 ? 'entry' : 'entries'}',
-                          style: Theme.of(context).textTheme.bodySmall,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black,
+                          ),
                         ),
                       ],
                     ),
@@ -231,6 +236,7 @@ class _CpdListPageState extends ConsumerState<CpdListPage> {
           ),
         ],
       ),
+      bottomNavigationBar: const BottomNavBar(),
     );
   }
 }

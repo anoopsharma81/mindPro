@@ -47,17 +47,20 @@ class DocumentSourceSelector extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Create from Document/Photo',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Color(0xFFF5F3F0),
+                      ),
                     ),
                     Text(
                       'AI will extract and structure your reflection',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey.shade600,
-                          ),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: const Color(0xFFF5F3F0).withOpacity(0.8),
+                      ),
                     ),
                   ],
                 ),
@@ -100,7 +103,7 @@ class DocumentSourceSelector extends StatelessWidget {
             icon: Icons.description,
             iconColor: Colors.green.shade400,
             title: 'Upload Document',
-            subtitle: 'PDF, Word, or text file',
+            subtitle: 'PDF, Word (.docx), Text, or Image',
             onTap: () {
               Navigator.pop(context);
               onUploadDocument();
@@ -132,12 +135,14 @@ class DocumentSourceSelector extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey.shade300),
-            borderRadius: BorderRadius.circular(12),
-          ),
+        child:           Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: const Color(0xFFF5F3F0).withOpacity(0.3),
+              ),
+              borderRadius: BorderRadius.circular(12),
+            ),
           child: Row(
             children: [
               Container(
@@ -162,6 +167,7 @@ class DocumentSourceSelector extends StatelessWidget {
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
+                        color: Color(0xFFF5F3F0),
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -169,7 +175,7 @@ class DocumentSourceSelector extends StatelessWidget {
                       subtitle,
                       style: TextStyle(
                         fontSize: 13,
-                        color: Colors.grey.shade600,
+                        color: const Color(0xFFF5F3F0).withOpacity(0.7),
                       ),
                     ),
                   ],
@@ -178,7 +184,7 @@ class DocumentSourceSelector extends StatelessWidget {
               Icon(
                 Icons.arrow_forward_ios,
                 size: 16,
-                color: Colors.grey.shade400,
+                color: const Color(0xFFF5F3F0).withOpacity(0.5),
               ),
             ],
           ),

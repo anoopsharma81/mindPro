@@ -141,6 +141,7 @@ Now what (action): ${widget.reflection.nowWhat}
           children: [
             // Instructions
             Card(
+              color: Colors.white,
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -152,13 +153,16 @@ Now what (action): ${widget.reflection.nowWhat}
                         const SizedBox(width: 8),
                         Text(
                           'Metanoia AI Assistant',
-                          style: Theme.of(context).textTheme.titleMedium,
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: Colors.black,
+                          ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
                     const Text(
                       'The AI will review your reflection and suggest improvements through iterative refinement. This helps enhance clarity, depth, and learning outcomes.',
+                      style: TextStyle(color: Colors.black),
                     ),
                   ],
                 ),
@@ -168,9 +172,12 @@ Now what (action): ${widget.reflection.nowWhat}
             
             // Iterations selector
             if (!_isComplete) ...[
-              Text(
+              const Text(
                 'Number of iterations',
-                style: Theme.of(context).textTheme.titleSmall,
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFFF5F3F0),
+                ),
               ),
               const SizedBox(height: 8),
               Row(
@@ -189,7 +196,10 @@ Now what (action): ${widget.reflection.nowWhat}
                       },
                     ),
                   ),
-                  Text('$_iterations'),
+                  Text(
+                    '$_iterations',
+                    style: const TextStyle(color: Color(0xFFF5F3F0)),
+                  ),
                 ],
               ),
               const SizedBox(height: 24),
@@ -244,7 +254,7 @@ Now what (action): ${widget.reflection.nowWhat}
             if (_isComplete && _result != null) ...[
               const SizedBox(height: 16),
               Card(
-                color: Theme.of(context).colorScheme.primaryContainer,
+                color: Colors.white,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -252,11 +262,14 @@ Now what (action): ${widget.reflection.nowWhat}
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.check_circle, color: Theme.of(context).colorScheme.primary),
+                          Icon(Icons.check_circle, color: Colors.green[700]),
                           const SizedBox(width: 8),
-                          Text(
+                          const Text(
                             'AI Improvement Complete',
-                            style: Theme.of(context).textTheme.titleMedium,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
                           ),
                         ],
                       ),
@@ -264,7 +277,10 @@ Now what (action): ${widget.reflection.nowWhat}
                       if (_result!['score'] != null) ...[
                         Text(
                           'Quality Score: ${((_result!['score'] as num) * 10).toStringAsFixed(0)}%',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
                         ),
                         const SizedBox(height: 16),
                       ],
@@ -278,6 +294,7 @@ Now what (action): ${widget.reflection.nowWhat}
               if (_result!['improved'] != null) ...[
                 // Original Text
                 Card(
+                  color: Colors.white,
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
@@ -287,11 +304,11 @@ Now what (action): ${widget.reflection.nowWhat}
                           children: [
                             Icon(Icons.article_outlined, color: Colors.grey[600]),
                             const SizedBox(width: 8),
-                            Text(
+                            const Text(
                               'BEFORE (Original)',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.grey[600],
+                                color: Colors.black,
                               ),
                             ),
                           ],
@@ -307,7 +324,7 @@ Now what (action): ${widget.reflection.nowWhat}
                             '''${widget.reflection.what}
 
 ${widget.reflection.soWhat.isNotEmpty ? 'Analysis: ${widget.reflection.soWhat}\n' : ''}${widget.reflection.nowWhat.isNotEmpty ? 'Action: ${widget.reflection.nowWhat}' : ''}'''.trim(),
-                            style: TextStyle(color: Colors.grey[700]),
+                            style: const TextStyle(color: Colors.black),
                           ),
                         ),
                       ],
@@ -328,11 +345,11 @@ ${widget.reflection.soWhat.isNotEmpty ? 'Analysis: ${widget.reflection.soWhat}\n
                           children: [
                             Icon(Icons.auto_awesome, color: Colors.green[700]),
                             const SizedBox(width: 8),
-                            Text(
+                            const Text(
                               'AFTER (AI Improved)',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.green[700],
+                                color: Colors.black,
                               ),
                             ),
                           ],
@@ -347,7 +364,10 @@ ${widget.reflection.soWhat.isNotEmpty ? 'Analysis: ${widget.reflection.soWhat}\n
                           ),
                           child: Text(
                             _result!['improved'] as String,
-                            style: const TextStyle(fontSize: 15),
+                            style: const TextStyle(
+                              fontSize: 15,
+                              color: Colors.black,
+                            ),
                           ),
                         ),
                       ],

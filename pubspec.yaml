@@ -64,6 +64,7 @@ dependencies:
   # Utilities
   url_launcher: ^6.3.1
   flutter_dotenv: ^5.2.1
+  google_fonts: ^6.2.1
   
   # Voice-to-text (Feature 1)
   speech_to_text: ^7.0.0

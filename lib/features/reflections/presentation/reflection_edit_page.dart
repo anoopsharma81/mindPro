@@ -94,8 +94,15 @@ class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Exit without saving?'),
-        content: const Text('Any unsaved changes will be lost.'),
+        backgroundColor: Colors.white,
+        title: const Text(
+          'Exit without saving?',
+          style: TextStyle(color: Colors.black),
+        ),
+        content: const Text(
+          'Any unsaved changes will be lost.',
+          style: TextStyle(color: Colors.black),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -195,7 +202,7 @@ class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
             IconButton(
               onPressed: _openSelfPlay,
               icon: const Icon(Icons.auto_awesome),
-              tooltip: 'Improve with AI',
+              tooltip: 'Improve with Metanoia',
             ),
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert),
@@ -338,13 +345,11 @@ class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
             // AI Improvement Button
             Container(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.purple.shade400, Colors.blue.shade400],
-                ),
+                color: Colors.black,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.purple.shade200,
+                    color: Colors.black.withOpacity(0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
@@ -363,35 +368,15 @@ class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(
-                          Icons.auto_awesome,
-                          color: Colors.white,
-                          size: 24,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Text(
-                                'Improve with AI',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                'Get AI suggestions to enhance reflection',
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.9),
-                                  fontSize: 11,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
+                        const Expanded(
+                          child: Text(
+                            'Improve with Metanoia',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
                         ),
                         const SizedBox(width: 8),

@@ -5,6 +5,7 @@ import '../export/export_service.dart';
 import '../reflections/data/reflection_repository.dart';
 import '../cpd/data/cpd_repository.dart';
 import '../auth/auth_provider.dart';
+import '../../shared/widgets/bottom_nav_bar.dart';
 
 class ExportPage extends ConsumerWidget {
   const ExportPage({super.key});
@@ -44,6 +45,7 @@ class ExportPage extends ConsumerWidget {
           child: const Text('Export Markdown'),
         ),
       ),
+      bottomNavigationBar: const BottomNavBar(),
     );
   }
 }

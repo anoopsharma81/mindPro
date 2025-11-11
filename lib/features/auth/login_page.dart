@@ -96,7 +96,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   
   @override
   Widget build(BuildContext context) {
+    const backgroundColor = Color(0xFF0C2F37);
+    const textColor = Color(0xFFF5F3F0);
+    const buttonBackgroundColor = Colors.black;
+    
     return Scaffold(
+      backgroundColor: backgroundColor,
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -108,18 +113,25 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Logo/Title
-                  const Icon(Icons.local_hospital, size: 64, color: Colors.indigo),
-                  const SizedBox(height: 16),
+                  // Metanoia Logo
+                  _MetanoiaLogo(textColor: textColor),
+                  const SizedBox(height: 24),
                   Text(
                     'Metanoia',
-                    style: Theme.of(context).textTheme.headlineMedium,
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      color: textColor,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'NHS Appraisal Assistant',
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    'Reflective intelligence',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: textColor.withOpacity(0.9),
+                      letterSpacing: 0.5,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 48),
@@ -127,10 +139,20 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   // Email field
                   TextFormField(
                     controller: _emailController,
-                    decoration: const InputDecoration(
+                    style: const TextStyle(color: textColor),
+                    decoration: InputDecoration(
                       labelText: 'Email',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.email),
+                      labelStyle: const TextStyle(color: textColor),
+                      border: OutlineInputBorder(
+                        borderSide: const BorderSide(color: textColor),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: textColor.withOpacity(0.5)),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: textColor),
+                      ),
+                      prefixIcon: const Icon(Icons.email, color: textColor),
                     ),
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) {
@@ -148,10 +170,20 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   // Password field
                   TextFormField(
                     controller: _passwordController,
-                    decoration: const InputDecoration(
+                    style: const TextStyle(color: textColor),
+                    decoration: InputDecoration(
                       labelText: 'Password',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.lock),
+                      labelStyle: const TextStyle(color: textColor),
+                      border: OutlineInputBorder(
+                        borderSide: const BorderSide(color: textColor),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: textColor.withOpacity(0.5)),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: textColor),
+                      ),
+                      prefixIcon: const Icon(Icons.lock, color: textColor),
                     ),
                     obscureText: true,
                     validator: (value) {
@@ -167,22 +199,38 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   if (_errorMessage != null) ...[
                     Text(
                       _errorMessage!,
-                      style: TextStyle(color: Theme.of(context).colorScheme.error),
+                      style: const TextStyle(
+                        color: Colors.red,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 16),
                   ],
                   
                   // Sign in button
-                  FilledButton(
+                  ElevatedButton(
                     onPressed: _isLoading ? null : _signIn,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: buttonBackgroundColor,
+                      foregroundColor: textColor,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
                     child: _isLoading
                         ? const SizedBox(
                             height: 20,
                             width: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(textColor),
+                            ),
                           )
-                        : const Text('Sign In'),
+                        : const Text(
+                            'Sign In',
+                            style: TextStyle(
+                              color: textColor,
+                              fontSize: 16,
+                            ),
+                          ),
                   ),
                   
                   // Optional: Google sign in (commented out to prevent crashes)
@@ -210,13 +258,173 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   // Sign up link
                   TextButton(
                     onPressed: () => context.go('/signup'),
-                    child: const Text('Don\'t have an account? Sign up'),
+                    child: const Text(
+                      'Don\'t have an account? Sign up',
+                      style: TextStyle(color: textColor),
+                    ),
                   ),
                 ],
               ),
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Creative Metanoia Logo Widget
+/// Represents reflection, transformation, and intelligence
+class _MetanoiaLogo extends StatelessWidget {
+  final Color textColor;
+  
+  const _MetanoiaLogo({required this.textColor});
+  
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 120,
+      height: 120,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Outer glow circle
+          Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  textColor.withOpacity(0.15),
+                  textColor.withOpacity(0.05),
+                  Colors.transparent,
+                ],
+                stops: const [0.0, 0.7, 1.0],
+              ),
+            ),
+          ),
+          // Main circle with gradient border
+          Container(
+            width: 100,
+            height: 100,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  textColor.withOpacity(0.25),
+                  textColor.withOpacity(0.1),
+                ],
+              ),
+              border: Border.all(
+                color: textColor.withOpacity(0.4),
+                width: 2.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: textColor.withOpacity(0.15),
+                  blurRadius: 15,
+                  spreadRadius: 3,
+                ),
+              ],
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                // Brain icon at top (thinking/reflection)
+                Positioned(
+                  top: 18,
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: textColor.withOpacity(0.15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: textColor.withOpacity(0.2),
+                          blurRadius: 8,
+                          spreadRadius: 1,
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      Icons.psychology,
+                      color: textColor,
+                      size: 24,
+                    ),
+                  ),
+                ),
+                // Stylized "M" letter (Metanoia)
+                Positioned(
+                  bottom: 22,
+                  child: Text(
+                    'M',
+                    style: TextStyle(
+                      color: textColor,
+                      fontSize: 36,
+                      fontWeight: FontWeight.w900,
+                      height: 1,
+                      letterSpacing: -1,
+                      shadows: [
+                        Shadow(
+                          color: textColor.withOpacity(0.4),
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                // Reflection indicator (horizontal line)
+                Positioned(
+                  left: 25,
+                  right: 25,
+                  bottom: 30,
+                  child: Container(
+                    height: 1.5,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.transparent,
+                          textColor.withOpacity(0.3),
+                          Colors.transparent,
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(1),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Accent dots (decorative)
+          Positioned(
+            left: 15,
+            top: 45,
+            child: Container(
+              width: 4,
+              height: 4,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: textColor.withOpacity(0.4),
+              ),
+            ),
+          ),
+          Positioned(
+            right: 15,
+            top: 45,
+            child: Container(
+              width: 4,
+              height: 4,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: textColor.withOpacity(0.4),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

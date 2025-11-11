@@ -4,6 +4,15 @@ import dotenv from 'dotenv';
 import OpenAI from 'openai';
 import admin from 'firebase-admin';
 import { readFileSync } from 'fs';
+import { createRequire } from 'module';
+
+// Import CommonJS modules
+const require = createRequire(import.meta.url);
+const PDFExtract = require('pdf.js-extract').PDFExtract;
+const mammoth = require('mammoth');
+
+// Initialize PDF extractor
+const pdfExtract = new PDFExtract();
 
 // Load environment variables
 dotenv.config();
@@ -103,60 +112,195 @@ app.post('/api/extract', verifyFirebaseToken, async (req, res) => {
       return res.status(400).json({ error: 'photoUrl is required' });
     }
 
-    console.log(`📸 Extracting from ${source}: ${photoUrl}`);
+    console.log(`📄 Extracting from ${source}: ${photoUrl.substring(0, 100)}...`);
+    console.log(`   MIME type: ${mimeType}`);
 
-    // Use OpenAI to extract reflection from document/photo
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [
-        {
-          role: 'system',
-          content: `You are an expert at extracting reflection content from documents and photos. 
+    // Download the file first
+    const fileResponse = await fetch(photoUrl);
+    if (!fileResponse.ok) {
+      throw new Error(`Failed to download file: ${fileResponse.statusText}`);
+    }
+    
+    const fileBuffer = Buffer.from(await fileResponse.arrayBuffer());
+    console.log(`   File size: ${(fileBuffer.length / 1024).toFixed(2)} KB`);
+
+    let extractedText = '';
+    let processingMethod = '';
+
+    // Determine file type and extract content
+    const mime = (mimeType || '').toLowerCase();
+    
+    // Handle PDFs
+    if (mime.includes('pdf')) {
+      console.log('📑 Processing PDF document...');
+      try {
+        const pdfData = await pdfExtract.extractBuffer(fileBuffer);
+        const textParts = [];
+        
+        for (const page of pdfData.pages) {
+          const pageText = page.content
+            .map(item => item.str || '')
+            .join(' ');
+          textParts.push(pageText);
+        }
+        
+        extractedText = textParts.join('\n\n').trim();
+        processingMethod = 'pdf-text-extraction';
+        console.log(`   Extracted ${extractedText.length} characters from ${pdfData.pages.length} pages`);
+      } catch (pdfError) {
+        console.error('   PDF extraction failed:', pdfError.message);
+        return res.status(400).json({ 
+          error: 'PDF processing failed',
+          details: 'Could not extract text from PDF. It may be scanned or corrupted. Try uploading as an image instead.'
+        });
+      }
+    }
+    // Handle Word documents
+    else if (mime.includes('word') || mime.includes('msword') || mime.includes('officedocument')) {
+      console.log('📝 Processing Word document...');
+      try {
+        const result = await mammoth.extractRawText({ buffer: fileBuffer });
+        extractedText = result.value.trim();
+        processingMethod = 'word-text-extraction';
+        console.log(`   Extracted ${extractedText.length} characters from Word doc`);
+      } catch (wordError) {
+        console.error('   Word extraction failed:', wordError.message);
+        return res.status(400).json({ 
+          error: 'Word document processing failed',
+          details: 'Could not extract text from Word document.'
+        });
+      }
+    }
+    // Handle plain text files
+    else if (mime.includes('text/plain')) {
+      console.log('📄 Processing text file...');
+      extractedText = fileBuffer.toString('utf-8').trim();
+      processingMethod = 'text-file';
+      console.log(`   Read ${extractedText.length} characters from text file`);
+    }
+    // Handle images (existing Vision API approach)
+    else if (mime.includes('image') || mime.includes('png') || mime.includes('jpeg') || mime.includes('jpg') || mime.includes('gif') || mime.includes('webp')) {
+      console.log('🖼️  Processing image with Vision API...');
+      processingMethod = 'vision-api';
+      
+      const completion = await openai.chat.completions.create({
+        model: 'gpt-4o',
+        messages: [
+          {
+            role: 'system',
+            content: `You are an expert at extracting reflection content from documents and photos. 
 Extract the key information and structure it into a reflection using the "What? So what? Now what?" framework.
 Return a JSON object with: title, what, soWhat, nowWhat, tags (array), suggestedDomains (array of GMC domain numbers 1-4), confidence (0-1).`
+          },
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'text',
+                text: `Extract reflection content from this ${source}. If it's handwritten notes, certificates, or learning materials, create a structured reflection from it.`
+              },
+              {
+                type: 'image_url',
+                image_url: { url: photoUrl }
+              }
+            ]
+          }
+        ],
+        response_format: { type: 'json_object' },
+        max_tokens: 2000
+      });
+
+      const result = JSON.parse(completion.choices[0].message.content);
+      console.log(`✅ Vision extraction completed (confidence: ${result.confidence || 'N/A'})`);
+
+      return res.json({
+        reflection: {
+          title: result.title || 'Untitled Reflection',
+          what: result.what || '',
+          soWhat: result.soWhat || '',
+          nowWhat: result.nowWhat || '',
+          tags: result.tags || [],
+          suggestedDomains: result.suggestedDomains || [],
+          confidence: result.confidence || 0.5
         },
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'text',
-              text: `Extract reflection content from this ${source}. If it's handwritten notes, certificates, or learning materials, create a structured reflection from it.`
-            },
-            {
-              type: 'image_url',
-              image_url: { url: photoUrl }
-            }
-          ]
+        metadata: {
+          source,
+          extractedText: result.extractedText || null,
+          processingMethod
         }
-      ],
-      response_format: { type: 'json_object' },
-      max_tokens: 2000
-    });
+      });
+    }
+    else {
+      return res.status(400).json({ 
+        error: 'Unsupported file format',
+        details: `Supported: PDF, Word (.doc/.docx), Text (.txt), Images (PNG/JPEG/GIF/WebP). Received: ${mimeType}`
+      });
+    }
 
-    const result = JSON.parse(completion.choices[0].message.content);
-    
-    console.log(`✅ Extraction completed (confidence: ${result.confidence || 'N/A'})`);
-
-    res.json({
-      reflection: {
-        title: result.title || 'Untitled Reflection',
-        what: result.what || '',
-        soWhat: result.soWhat || '',
-        nowWhat: result.nowWhat || '',
-        tags: result.tags || [],
-        suggestedDomains: result.suggestedDomains || [],
-        confidence: result.confidence || 0.5
-      },
-      metadata: {
-        source,
-        extractedText: result.extractedText || null
+    // For text-based documents (PDF, Word, Text), process with GPT
+    if (extractedText) {
+      if (extractedText.length < 10) {
+        return res.status(400).json({ 
+          error: 'No text found',
+          details: 'Document appears to be empty or is a scanned image. Try uploading as a photo instead.'
+        });
       }
-    });
+
+      console.log('🤖 Processing extracted text with GPT-4o...');
+      
+      const completion = await openai.chat.completions.create({
+        model: 'gpt-4o',
+        messages: [
+          {
+            role: 'system',
+            content: `You are an expert at extracting reflection content from documents. 
+Extract the key information and structure it into a reflection using the "What? So what? Now what?" framework.
+Return a JSON object with: title, what, soWhat, nowWhat, tags (array), suggestedDomains (array of GMC domain numbers 1-4), confidence (0-1).`
+          },
+          {
+            role: 'user',
+            content: `Extract and structure this content into a medical reflection:\n\n${extractedText}`
+          }
+        ],
+        response_format: { type: 'json_object' },
+        max_tokens: 2000
+      });
+
+      const result = JSON.parse(completion.choices[0].message.content);
+      console.log(`✅ Text extraction completed (confidence: ${result.confidence || 'N/A'})`);
+
+      return res.json({
+        reflection: {
+          title: result.title || 'Untitled Reflection',
+          what: result.what || '',
+          soWhat: result.soWhat || '',
+          nowWhat: result.nowWhat || '',
+          tags: result.tags || [],
+          suggestedDomains: result.suggestedDomains || [],
+          confidence: result.confidence || 0.7
+        },
+        metadata: {
+          source,
+          extractedText: extractedText.substring(0, 500), // First 500 chars for reference
+          processingMethod
+        }
+      });
+    }
+
   } catch (error) {
     console.error('❌ Extraction failed:', error);
+    
+    let errorMessage = 'Extraction failed';
+    let errorDetails = error.message;
+    
+    if (error.message && error.message.includes('unsupported image')) {
+      errorMessage = 'Unsupported file format';
+      errorDetails = 'Please upload a supported file: PDF, Word, Text, or Image (PNG/JPEG/GIF/WebP).';
+    }
+    
     res.status(500).json({ 
-      error: 'Extraction failed', 
-      details: error.message 
+      error: errorMessage, 
+      details: errorDetails 
     });
   }
 });

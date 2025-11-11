@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../auth/auth_provider.dart';
 import 'profile_model.dart';
 import 'year_editor.dart';
+import '../../shared/widgets/bottom_nav_bar.dart';
 
 class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
@@ -223,6 +224,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text('Error: $error')),
       ),
+      bottomNavigationBar: const BottomNavBar(),
     );
   }
   

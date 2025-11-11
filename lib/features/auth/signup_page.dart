@@ -15,8 +15,8 @@ class _SignupPageState extends ConsumerState<SignupPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  final _displayNameController = TextEditingController();
-  final _gmcNumberController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   String? _errorMessage;
@@ -26,8 +26,8 @@ class _SignupPageState extends ConsumerState<SignupPage> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
-    _displayNameController.dispose();
-    _gmcNumberController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
     super.dispose();
   }
   
@@ -48,10 +48,14 @@ class _SignupPageState extends ConsumerState<SignupPage> {
       
       // Create initial profile
       if (userCredential.user != null) {
+        final firstName = _firstNameController.text.trim();
+        final lastName = _lastNameController.text.trim();
+        final displayName = '$firstName $lastName'.trim();
+        
         final profile = Profile(
           uid: userCredential.user!.uid,
-          displayName: _displayNameController.text.trim(),
-          gmcNumber: _gmcNumberController.text.trim(),
+          displayName: displayName.isNotEmpty ? displayName : firstName.isNotEmpty ? firstName : lastName,
+          gmcNumber: '', // GMC number removed from signup
           defaultYear: DateTime.now().year.toString(),
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
@@ -79,9 +83,16 @@ class _SignupPageState extends ConsumerState<SignupPage> {
   
   @override
   Widget build(BuildContext context) {
+    const backgroundColor = Color(0xFF0C2F37);
+    const textColor = Color(0xFFF5F3F0);
+    const buttonBackgroundColor = Colors.black;
+    
     return Scaffold(
+      backgroundColor: backgroundColor,
       appBar: AppBar(
-        title: const Text('Sign Up'),
+        title: const Text('Sign Up', style: TextStyle(color: textColor)),
+        backgroundColor: backgroundColor,
+        iconTheme: const IconThemeData(color: textColor),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/login'),
@@ -98,34 +109,54 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Display name
+                  // First Name
                   TextFormField(
-                    controller: _displayNameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Full Name',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.person),
+                    controller: _firstNameController,
+                    style: const TextStyle(color: textColor),
+                    decoration: InputDecoration(
+                      labelText: 'First Name',
+                      labelStyle: const TextStyle(color: textColor),
+                      border: OutlineInputBorder(
+                        borderSide: const BorderSide(color: textColor),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: textColor.withOpacity(0.5)),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: textColor),
+                      ),
+                      prefixIcon: const Icon(Icons.person, color: textColor),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your full name';
+                        return 'Please enter your first name';
                       }
                       return null;
                     },
                   ),
                   const SizedBox(height: 16),
                   
-                  // GMC number
+                  // Last Name
                   TextFormField(
-                    controller: _gmcNumberController,
-                    decoration: const InputDecoration(
-                      labelText: 'GMC Number',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.badge),
+                    controller: _lastNameController,
+                    style: const TextStyle(color: textColor),
+                    decoration: InputDecoration(
+                      labelText: 'Last Name',
+                      labelStyle: const TextStyle(color: textColor),
+                      border: OutlineInputBorder(
+                        borderSide: const BorderSide(color: textColor),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: textColor.withOpacity(0.5)),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: textColor),
+                      ),
+                      prefixIcon: const Icon(Icons.person_outline, color: textColor),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your GMC number';
+                        return 'Please enter your last name';
                       }
                       return null;
                     },
@@ -135,10 +166,20 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                   // Email
                   TextFormField(
                     controller: _emailController,
-                    decoration: const InputDecoration(
+                    style: const TextStyle(color: textColor),
+                    decoration: InputDecoration(
                       labelText: 'Email',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.email),
+                      labelStyle: const TextStyle(color: textColor),
+                      border: OutlineInputBorder(
+                        borderSide: const BorderSide(color: textColor),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: textColor.withOpacity(0.5)),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: textColor),
+                      ),
+                      prefixIcon: const Icon(Icons.email, color: textColor),
                     ),
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) {
@@ -156,10 +197,20 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                   // Password
                   TextFormField(
                     controller: _passwordController,
-                    decoration: const InputDecoration(
+                    style: const TextStyle(color: textColor),
+                    decoration: InputDecoration(
                       labelText: 'Password',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.lock),
+                      labelStyle: const TextStyle(color: textColor),
+                      border: OutlineInputBorder(
+                        borderSide: const BorderSide(color: textColor),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: textColor.withOpacity(0.5)),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: textColor),
+                      ),
+                      prefixIcon: const Icon(Icons.lock, color: textColor),
                     ),
                     obscureText: true,
                     validator: (value) {
@@ -177,10 +228,20 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                   // Confirm password
                   TextFormField(
                     controller: _confirmPasswordController,
-                    decoration: const InputDecoration(
+                    style: const TextStyle(color: textColor),
+                    decoration: InputDecoration(
                       labelText: 'Confirm Password',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.lock_outline),
+                      labelStyle: const TextStyle(color: textColor),
+                      border: OutlineInputBorder(
+                        borderSide: const BorderSide(color: textColor),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: textColor.withOpacity(0.5)),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: textColor),
+                      ),
+                      prefixIcon: const Icon(Icons.lock_outline, color: textColor),
                     ),
                     obscureText: true,
                     validator: (value) {
@@ -196,29 +257,46 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                   if (_errorMessage != null) ...[
                     Text(
                       _errorMessage!,
-                      style: TextStyle(color: Theme.of(context).colorScheme.error),
+                      style: const TextStyle(color: Colors.red),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 16),
                   ],
                   
                   // Sign up button
-                  FilledButton(
+                  ElevatedButton(
                     onPressed: _isLoading ? null : _signUp,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: buttonBackgroundColor,
+                      foregroundColor: textColor,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
                     child: _isLoading
                         ? const SizedBox(
                             height: 20,
                             width: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(textColor),
+                            ),
                           )
-                        : const Text('Create Account'),
+                        : const Text(
+                            'Create Account',
+                            style: TextStyle(
+                              color: textColor,
+                              fontSize: 16,
+                            ),
+                          ),
                   ),
                   const SizedBox(height: 16),
                   
                   // Sign in link
                   TextButton(
                     onPressed: () => context.go('/login'),
-                    child: const Text('Already have an account? Sign in'),
+                    child: const Text(
+                      'Already have an account? Sign in',
+                      style: TextStyle(color: textColor),
+                    ),
                   ),
                 ],
               ),

@@ -125,7 +125,7 @@ class _ReflectionFromDocumentPageState
   Future<void> _uploadDocument() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['pdf', 'doc', 'docx', 'txt'],
+      allowedExtensions: ['pdf', 'doc', 'docx', 'txt', 'png', 'jpg', 'jpeg', 'gif', 'webp'],
       withData: kIsWeb, // On web, we need bytes
     );
 

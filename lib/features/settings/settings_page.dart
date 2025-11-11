@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../auth/auth_provider.dart';
 import 'privacy_policy_page.dart';
 import '../../services/notification_service.dart';
+import '../../shared/widgets/bottom_nav_bar.dart';
 import 'package:hive/hive.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
@@ -405,6 +406,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           ),
         ],
       ),
+      bottomNavigationBar: const BottomNavBar(),
     );
   }
 }

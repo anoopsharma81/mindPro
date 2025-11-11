@@ -5,9 +5,10 @@ import '../data/reflection_repository.dart';
 import '../data/reflection.dart';
 import '../../../common/widgets/gmc_domain_selector.dart';
 import '../../../common/widgets/empty_state.dart';
+import '../../../shared/widgets/bottom_nav_bar.dart';
+import 'voice_note_flow_page.dart';
 import 'widgets/document_source_selector.dart';
 import 'reflection_from_document_page.dart';
-import 'voice_note_flow_page.dart';
 
 class ReflectionsListPage extends ConsumerStatefulWidget {
   const ReflectionsListPage({super.key});
@@ -28,9 +29,6 @@ class _ReflectionsListPageState extends ConsumerState<ReflectionsListPage> {
   @override void initState(){ super.initState(); _load(); }
 
   void _showCreateOptions() {
-    // Capture the stable context from the widget
-    final navigatorContext = context;
-    
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -50,55 +48,21 @@ class _ReflectionsListPageState extends ConsumerState<ReflectionsListPage> {
             ),
             const SizedBox(height: 16),
             
-            // AI option
+            // Manual option
             ListTile(
               leading: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Colors.purple.shade400, Colors.blue.shade400],
-                  ),
+                  color: Colors.blue.shade100,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.auto_awesome, color: Colors.white),
+                child: Icon(Icons.edit, color: Colors.blue.shade700),
               ),
-              title: const Text('From Document/Photo (AI)'),
-              subtitle: const Text('Snap or upload, AI creates draft'),
+              title: const Text('Write Manually'),
+              subtitle: const Text('Type your reflection'),
               onTap: () {
                 Navigator.pop(sheetContext);
-                DocumentSourceSelector.show(
-                  navigatorContext,
-                  onTakePhoto: () {
-                    Navigator.push(
-                      navigatorContext,
-                      MaterialPageRoute(
-                        builder: (context) => const ReflectionFromDocumentPage(
-                          sourceType: 'camera',
-                        ),
-                      ),
-                    );
-                  },
-                  onChooseGallery: () {
-                    Navigator.push(
-                      navigatorContext,
-                      MaterialPageRoute(
-                        builder: (context) => const ReflectionFromDocumentPage(
-                          sourceType: 'gallery',
-                        ),
-                      ),
-                    );
-                  },
-                  onUploadDocument: () {
-                    Navigator.push(
-                      navigatorContext,
-                      MaterialPageRoute(
-                        builder: (context) => const ReflectionFromDocumentPage(
-                          sourceType: 'document',
-                        ),
-                      ),
-                    );
-                  },
-                );
+                context.go('/reflections/new');
               },
             ),
             const Divider(),
@@ -113,12 +77,12 @@ class _ReflectionsListPageState extends ConsumerState<ReflectionsListPage> {
                 ),
                 child: Icon(Icons.mic, color: Colors.red.shade700),
               ),
-              title: const Text('From Voice Note'),
-              subtitle: const Text('Record and transcribe'),
+              title: const Text('Record Voice Note'),
+              subtitle: const Text('Speak and transcribe'),
               onTap: () {
                 Navigator.pop(sheetContext);
                 Navigator.push(
-                  navigatorContext,
+                  context,
                   MaterialPageRoute(
                     builder: (context) => const VoiceNoteFlowPage(),
                   ),
@@ -127,21 +91,55 @@ class _ReflectionsListPageState extends ConsumerState<ReflectionsListPage> {
             ),
             const Divider(),
             
-            // Manual option
+            // AI Document extraction option
             ListTile(
               leading: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
+                  gradient: LinearGradient(
+                    colors: [Colors.purple.shade400, Colors.blue.shade400],
+                  ),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.edit, color: Colors.grey),
+                child: const Icon(Icons.auto_awesome, color: Colors.white),
               ),
-              title: const Text('From Scratch'),
-              subtitle: const Text('Type manually'),
+              title: const Text('Extract from Document'),
+              subtitle: const Text('AI extracts from any file type'),
               onTap: () {
                 Navigator.pop(sheetContext);
-                navigatorContext.go('/reflections/new');
+                DocumentSourceSelector.show(
+                  context,
+                  onTakePhoto: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ReflectionFromDocumentPage(
+                          sourceType: 'camera',
+                        ),
+                      ),
+                    );
+                  },
+                  onChooseGallery: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ReflectionFromDocumentPage(
+                          sourceType: 'gallery',
+                        ),
+                      ),
+                    );
+                  },
+                  onUploadDocument: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ReflectionFromDocumentPage(
+                          sourceType: 'document',
+                        ),
+                      ),
+                    );
+                  },
+                );
               },
             ),
             const SizedBox(height: 8),
@@ -160,33 +158,27 @@ class _ReflectionsListPageState extends ConsumerState<ReflectionsListPage> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/'),
         ),
-      ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          // Voice note FAB (quick access)
-          FloatingActionButton(
-            mini: true,
-            heroTag: 'voice',
-            backgroundColor: Colors.red.shade700,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const VoiceNoteFlowPage(),
-                ),
-              );
-            },
-            child: const Icon(Icons.mic, color: Colors.white),
-          ),
-          const SizedBox(height: 16),
-          // Main add FAB
-          FloatingActionButton(
-            heroTag: 'add',
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add_circle_outline),
             onPressed: _showCreateOptions,
-            child: const Icon(Icons.add),
+            tooltip: 'Create Reflection',
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        mini: true,
+        heroTag: 'voice',
+        backgroundColor: Colors.red.shade700,
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const VoiceNoteFlowPage(),
+            ),
+          );
+        },
+        child: const Icon(Icons.mic, color: Colors.white),
       ),
       body: Column(children: [
         // AI Feature Banner
@@ -266,12 +258,18 @@ class _ReflectionsListPageState extends ConsumerState<ReflectionsListPage> {
                 itemBuilder: (c,i){
                   final r=_items[i];
                   return ListTile(
-                title: Text(r.title),
+                title: Text(
+                  r.title,
+                  style: const TextStyle(color: Color(0xFFF5F3F0)),
+                ),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (r.tags.isNotEmpty) 
-                      Text(r.tags.join(', ')),
+                      Text(
+                        r.tags.join(', '),
+                        style: TextStyle(color: const Color(0xFFF5F3F0).withOpacity(0.8)),
+                      ),
                     if (r.domains != null && r.domains!.isNotEmpty) ...[
                       const SizedBox(height: 4),
                       GmcDomainChips(domains: r.domains!, compact: true),
@@ -280,16 +278,22 @@ class _ReflectionsListPageState extends ConsumerState<ReflectionsListPage> {
                       const SizedBox(height: 4),
                       Text(
                         'Score: ${(r.score! * 100).toStringAsFixed(0)}%',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
-                          color: Theme.of(context).colorScheme.primary,
+                          color: Color(0xFFF5F3F0),
                         ),
                       ),
                     ],
                   ],
                 ),
                 trailing: r.hasRating 
-                  ? Text(r.ratingDisplay, style: const TextStyle(fontSize: 16))
+                  ? Text(
+                      r.ratingDisplay,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Color(0xFFF5F3F0),
+                      ),
+                    )
                   : null,
                 onTap: ()=>context.go('/reflections/${r.id}'),
               );
@@ -297,6 +301,7 @@ class _ReflectionsListPageState extends ConsumerState<ReflectionsListPage> {
           ),
         ),
       ]),
+      bottomNavigationBar: const BottomNavBar(),
     );
   }
 }
