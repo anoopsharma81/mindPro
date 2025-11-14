@@ -1,0 +1,65 @@
+Create a Learning Loop reflection based on the following clinical experience.
+
+Use the Metanoia Learning Loop framework v1.1 to structure this reflection for deliberate practice and metacognitive improvement.
+
+## Clinical Experience
+
+{{clinical_text}}
+
+## Instructions
+
+Analyze this clinical experience and create a structured Learning Loop reflection that:
+
+1. **Gate**: Assess the emotional and attentional state during this experience
+   - How focused was the doctor?
+   - What was the emotional tone of the situation?
+   - How intense were the emotions?
+
+2. **Observation & Action**: Extract key observations and the clinical action taken
+   - What were the most important clinical observations?
+   - What decision or action was taken?
+
+3. **Encoding**: Identify the clinical pattern and connections
+   - What clinical pattern or principle does this represent?
+   - How does this connect to prior medical knowledge?
+   - What tags would help retrieve this learning?
+
+4. **Prediction**: Determine what was predicted
+   - What hypothesis or prediction was made?
+   - How confident was the clinician?
+   - What key features were expected?
+
+5. **Feedback**: Compare prediction to outcome
+   - What was the actual outcome?
+   - What was the error signal (difference between prediction and reality)?
+
+6. **Reflection on Bias**: Identify cognitive biases
+   - What cognitive biases might have been present?
+   - How can these biases be countered in future?
+
+7. **Update Rule**: Create actionable learning
+   - What if-then rule captures this learning?
+   - What micro-practice can be done in 48 hours?
+   - When should this learning be reviewed? (2, 7, 30, 90 days)
+
+## Output Format
+
+Respond ONLY with valid JSON following the Metanoia Learning Loop v1.1 schema.
+
+Include all required fields:
+- gate (with attention_0_3, emotion_valence_-3_+3, emotion_arousal_0_3, context_note)
+- observation_action (with observations array and action)
+- encoding (with pattern_name, links_prior_knowledge, chunk_tags)
+- prediction (with hypothesis, probability_pct, discriminators_expected, confidence_bucket)
+- feedback (with outcome, error_signal)
+- reflection_bias (with bias_tags, counter_moves)
+- update_rule (with if_then, micro_rep_48h, spaced_plan_days)
+
+Optional meta section can include:
+- case_id
+- timestamp_iso
+- author
+- domain (clinical, business, research, other)
+
+Remember to respect all character limits and validation rules specified in the schema.
+

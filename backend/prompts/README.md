@@ -55,6 +55,30 @@ Each AI feature has two files:
 
 **Output**: JSON with type, domains, impact
 
+### 6. Learning Loop (Metanoia Framework v1.1)
+- `learning_loop_system.txt` - System prompt for Learning Loop reflections
+- `learning_loop_user.txt` - User prompt template
+
+**Variables**: `{{clinical_text}}`
+
+**Framework**: 7-Step Learning Loop
+1. GATE - Emotional and attentional state
+2. OBSERVATION & ACTION - Key observations and clinical action
+3. ENCODING - Pattern recognition and knowledge linking
+4. PREDICTION - Hypothesis formation with confidence calibration
+5. FEEDBACK - Outcome comparison and error detection
+6. REFLECTION ON BIAS - Cognitive bias identification
+7. UPDATE RULE - Actionable learning with spaced repetition
+
+**Output**: JSON following Metanoia Learning Loop v1.1 schema with:
+- gate (attention, emotion valence, emotion arousal, context note)
+- observation_action (observations array, action)
+- encoding (pattern name, prior knowledge links, chunk tags)
+- prediction (hypothesis, probability, discriminators, confidence bucket)
+- feedback (outcome, error signal)
+- reflection_bias (bias tags, counter moves)
+- update_rule (if-then rule, micro repetition, spaced plan)
+
 ## Usage in Code
 
 Currently, prompts are hardcoded in `server.js`. To use these files:

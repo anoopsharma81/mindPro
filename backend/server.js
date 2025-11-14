@@ -637,6 +637,72 @@ Return JSON with:
   }
 });
 
+// ==============================================================================
+// LEARNING LOOP GENERATION
+// ==============================================================================
+// Generate Learning Loop from reflection using cognitive science framework
+app.post('/api/learning-loop/generate', verifyFirebaseToken, async (req, res) => {
+  try {
+    const { clinical_text } = req.body;
+    
+    console.log('🧠 Generating Learning Loop...');
+    
+    if (!clinical_text || clinical_text.trim().length === 0) {
+      return res.status(400).json({ 
+        error: 'Missing clinical_text',
+        details: 'clinical_text is required and must not be empty'
+      });
+    }
+    
+    console.log(`   Processing ${clinical_text.length} characters of clinical text`);
+    
+    // Load prompts from files
+    const systemPrompt = readFileSync('./prompts/learning_loop_system.txt', 'utf8');
+    const userPromptTemplate = readFileSync('./prompts/learning_loop_user.txt', 'utf8');
+    
+    // Replace template variable
+    const userPrompt = userPromptTemplate.replace('{{clinical_text}}', clinical_text);
+    
+    console.log('   Calling OpenAI GPT-4o for Learning Loop generation...');
+    
+    // Call OpenAI with Learning Loop prompts
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      messages: [
+        {
+          role: 'system',
+          content: systemPrompt
+        },
+        {
+          role: 'user',
+          content: userPrompt
+        }
+      ],
+      response_format: { type: 'json_object' },
+      temperature: 0.7,
+      max_tokens: 3000
+    });
+    
+    const learningLoop = JSON.parse(completion.choices[0].message.content);
+    
+    console.log(`✅ Learning Loop generated successfully`);
+    console.log(`   Pattern: ${learningLoop.encoding?.pattern_name || 'N/A'}`);
+    console.log(`   Prediction confidence: ${learningLoop.prediction?.probability_pct || 'N/A'}%`);
+    
+    res.json({
+      success: true,
+      learning_loop: learningLoop
+    });
+    
+  } catch (error) {
+    console.error('❌ Learning Loop generation failed:', error);
+    res.status(500).json({ 
+      error: 'Learning Loop generation failed', 
+      details: error.message 
+    });
+  }
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`\n🚀 Metanoia Backend API running on http://localhost:${PORT}`);

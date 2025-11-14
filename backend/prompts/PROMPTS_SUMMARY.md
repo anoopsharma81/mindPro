@@ -24,8 +24,24 @@ All prompts are now stored in individual text files in `backend/prompts/`:
 - ✅ `cpd_tagging_system.txt` - System prompt
 - ✅ `cpd_tagging_user.txt` - User prompt template
 
-## 🔧 Recent Update
+### Learning Loop (Metanoia Framework v1.1)
+- ✅ `learning_loop_system.txt` - System prompt with JSON schema
+- ✅ `learning_loop_user.txt` - User prompt template
 
+## 🔧 Recent Updates
+
+### Latest: Learning Loop Framework Added
+**Added**: Metanoia Learning Loop v1.1 prompts
+- ✅ `learning_loop_system.txt` - System prompt with JSON schema
+- ✅ `learning_loop_user.txt` - User prompt template
+
+**Purpose**: Advanced reflection framework for deliberate practice and metacognition
+- 7-step learning loop based on cognitive science
+- Includes emotional gating, pattern encoding, prediction calibration
+- Cognitive bias detection and spaced repetition planning
+- Structured JSON output with validation schema
+
+### Previous: Clinical Reasoning Framework Update
 **Changed**: Step 2 of Clinical Reasoning Framework
 - **Old**: `COGNITIVE PROCESS`
 - **New**: `PATTERN RECOGNITION`
