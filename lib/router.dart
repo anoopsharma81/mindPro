@@ -11,6 +11,7 @@ import 'features/auth/login_page.dart';
 import 'features/auth/signup_page.dart';
 import 'features/profile/profile_page.dart';
 import 'features/settings/settings_page.dart';
+import 'features/learning_loops/presentation/learning_loop_page.dart';
 
 GoRouter createRouter() => GoRouter(
   initialLocation: '/',
@@ -40,6 +41,12 @@ GoRouter createRouter() => GoRouter(
     GoRoute(path: '/reflections', builder: (c, s) => const ReflectionsListPage()),
     GoRoute(path: '/reflections/new', builder: (c, s) => const ReflectionEditPage()),
     GoRoute(path: '/reflections/:id', builder: (c, s) => ReflectionEditPage(id: s.pathParameters['id'])),
+    GoRoute(
+      path: '/reflections/:reflectionId/learning-loop',
+      builder: (c, s) => LearningLoopPage(
+        reflectionId: s.pathParameters['reflectionId']!,
+      ),
+    ),
     GoRoute(path: '/cpd', builder: (c, s) => const CpdListPage()),
     GoRoute(path: '/cpd/new', builder: (c, s) => const CpdEditPage()),
     GoRoute(path: '/cpd/import', builder: (c, s) => const CpdImportPage()),

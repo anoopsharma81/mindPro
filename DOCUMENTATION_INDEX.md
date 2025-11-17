@@ -10,6 +10,8 @@
 |-------------------|-----------|
 | **Launch the pilot NOW** | `PILOT_LAUNCH_READY.md` |
 | **Understand the complete project** | `PROJECT_COMPLETE.md` |
+| **Plan Learning Loop feature** | `LEARNING_LOOP_SUMMARY.md` ⭐ NEW |
+| **Build Learning Loop feature** | `LEARNING_LOOP_QUICK_START.md` ⭐ NEW |
 | **Follow the launch checklist** | `LAUNCH_CHECKLIST.md` |
 | **Get quick reference for pilot** | `PILOT_QUICK_REFERENCE.md` |
 | **Give to pilot users** | `USER_GUIDE.md` or `QUICK_START.md` |
@@ -19,6 +21,16 @@
 ---
 
 ## 🎯 For You (Developer)
+
+### 🧠 Learning Loop Feature (NEW - November 2025)
+| Document | Purpose | Read Time |
+|----------|---------|-----------|
+| **`LEARNING_LOOP_START_HERE.md`** ⭐ | **Start here!** Navigation guide | 5 min |
+| `LEARNING_LOOP_SUMMARY.md` | Executive overview & decisions | 10 min |
+| `LEARNING_LOOP_FEATURE_PLAN.md` | Complete technical specification | 60 min |
+| `LEARNING_LOOP_QUICK_START.md` | Developer guide with code | 30 min |
+| `LEARNING_LOOP_UI_DESIGN.md` | Visual design & mockups | 20 min |
+| `LEARNING_LOOP_ROADMAP.md` | Diagrams & timeline | 15 min |
 
 ### Launch & Pilot Management
 | Document | Purpose | When to Use |
@@ -46,6 +58,14 @@
 | `PHASE_4_COMPLETE.md` | Security & Privacy | PHI detection, policies |
 | `PHASE_5_COMPLETE.md` | Testing & CI/CD | 59 tests, GitHub Actions |
 | `PHASE_6_COMPLETE.md` | Polish & Pilot | Empty states, onboarding |
+
+### Learning Loop Feature (New - Planning Phase)
+| Document | Purpose | Content |
+|----------|---------|---------|
+| `LEARNING_LOOP_SUMMARY.md` | Executive overview | Quick understanding of feature |
+| `LEARNING_LOOP_FEATURE_PLAN.md` | Complete implementation plan | Architecture, phases, details |
+| `LEARNING_LOOP_QUICK_START.md` | Developer quick-start | Code examples, checklist |
+| `LEARNING_LOOP_UI_DESIGN.md` | Visual design spec | UI mockups, components |
 
 ### Technical Setup
 | Document | Purpose | When to Use |

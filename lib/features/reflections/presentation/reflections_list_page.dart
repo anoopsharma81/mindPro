@@ -186,54 +186,43 @@ class _ReflectionsListPageState extends ConsumerState<ReflectionsListPage> {
           margin: const EdgeInsets.all(12),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Colors.purple.shade50,
-                Colors.blue.shade50,
-              ],
-            ),
+            color: Colors.black,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.purple.shade200),
+            border: Border.all(color: Colors.white10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
+              ),
+            ],
           ),
           child: Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.purple.shade100,
+                  color: Colors.white12,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.auto_awesome,
-                  color: Colors.purple.shade700,
+                  color: Colors.white,
                   size: 24,
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'AI-Powered Improvements',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                        color: Colors.purple.shade900,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Tap ✨ on any reflection to improve it with AI',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.purple.shade700,
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  'Tap ✨ button on any reflection to improve it with Metanoia',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                    color: Colors.white,
+                  ),
                 ),
               ),
-              Icon(Icons.chevron_right, color: Colors.purple.shade400),
+              const Icon(Icons.chevron_right, color: Colors.white54),
             ],
           ),
         ),

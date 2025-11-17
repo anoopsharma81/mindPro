@@ -31,6 +31,9 @@ class Reflection {
   final String? transcriptionText;            // Raw transcription text
   final String? transcriptionMethod;          // "on-device" | "whisper"
   final double? transcriptionConfidence;      // 0.0-1.0 transcription confidence
+  
+  // Learning Loop integration
+  final String? learningLoopId;               // ID of linked Learning Loop (if any)
 
   Reflection({
     required this.id,
@@ -57,6 +60,7 @@ class Reflection {
     this.transcriptionText,
     this.transcriptionMethod,
     this.transcriptionConfidence,
+    this.learningLoopId,
   });
 
   Reflection copyWith({
@@ -82,6 +86,7 @@ class Reflection {
     String? transcriptionText,
     String? transcriptionMethod,
     double? transcriptionConfidence,
+    String? learningLoopId,
   }) => Reflection(
     id: id,
     title: title ?? this.title,
@@ -107,6 +112,7 @@ class Reflection {
     transcriptionText: transcriptionText ?? this.transcriptionText,
     transcriptionMethod: transcriptionMethod ?? this.transcriptionMethod,
     transcriptionConfidence: transcriptionConfidence ?? this.transcriptionConfidence,
+    learningLoopId: learningLoopId ?? this.learningLoopId,
   );
 
   Map<String, dynamic> toJson() => {
@@ -134,6 +140,7 @@ class Reflection {
     if (transcriptionText != null) 'transcriptionText': transcriptionText,
     if (transcriptionMethod != null) 'transcriptionMethod': transcriptionMethod,
     if (transcriptionConfidence != null) 'transcriptionConfidence': transcriptionConfidence,
+    if (learningLoopId != null) 'learningLoopId': learningLoopId,
   };
 
   static Reflection fromJson(Map<String, dynamic> j) => Reflection(
@@ -165,6 +172,7 @@ class Reflection {
     transcriptionText: j['transcriptionText'] as String?,
     transcriptionMethod: j['transcriptionMethod'] as String?,
     transcriptionConfidence: j['transcriptionConfidence'] != null ? (j['transcriptionConfidence'] as num).toDouble() : null,
+    learningLoopId: j['learningLoopId'] as String?,
   );
   
   /// Get GMC domains as enum list

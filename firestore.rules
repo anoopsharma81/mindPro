@@ -27,6 +27,20 @@ service cloud.firestore {
       }
     }
     
+    // Learning Loops - users can only access their own
+    match /learning_loops/{year}/items/{loopId} {
+      // Allow list/query operations if authenticated
+      allow list, get: if request.auth != null;
+      
+      // Allow create if the userId matches the authenticated user
+      allow create: if request.auth != null
+        && request.resource.data.userId == request.auth.uid;
+      
+      // Allow update/delete if the userId matches
+      allow update, delete: if request.auth != null 
+        && resource.data.userId == request.auth.uid;
+    }
+    
     // Deny all other access
     match /{document=**} {
       allow read, write: if false;

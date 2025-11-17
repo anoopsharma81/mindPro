@@ -204,6 +204,12 @@ class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
               icon: const Icon(Icons.auto_awesome),
               tooltip: 'Improve with Metanoia',
             ),
+          if (isEdit)
+            IconButton(
+              onPressed: () => context.go('/reflections/${widget.id}/learning-loop'),
+              icon: const Icon(Icons.psychology),
+              tooltip: 'Learning Loop',
+            ),
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert),
             tooltip: 'More options',
