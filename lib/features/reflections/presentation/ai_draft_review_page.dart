@@ -136,6 +136,10 @@ class _AiDraftReviewPageState extends ConsumerState<AiDraftReviewPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Review AI Draft'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         actions: [
           IconButton(
             onPressed: () {

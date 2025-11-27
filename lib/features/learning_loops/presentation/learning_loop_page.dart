@@ -282,14 +282,26 @@ class _LearningLoopPageState extends ConsumerState<LearningLoopPage> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Learning Loop')),
+        appBar: AppBar(
+          title: const Text('Learning Loop'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.pop(),
+          ),
+        ),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
     
     if (_error != null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Learning Loop')),
+        appBar: AppBar(
+          title: const Text('Learning Loop'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.pop(),
+          ),
+        ),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
@@ -329,7 +341,13 @@ class _LearningLoopPageState extends ConsumerState<LearningLoopPage> {
     
     if (_isGenerating) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Learning Loop')),
+        appBar: AppBar(
+          title: const Text('Learning Loop'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.pop(),
+          ),
+        ),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
@@ -376,7 +394,13 @@ class _LearningLoopPageState extends ConsumerState<LearningLoopPage> {
     
     if (_loop == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Learning Loop')),
+        appBar: AppBar(
+          title: const Text('Learning Loop'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.pop(),
+          ),
+        ),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
@@ -421,6 +445,10 @@ class _LearningLoopPageState extends ConsumerState<LearningLoopPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Learning Loop'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.info_outline),

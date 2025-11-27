@@ -40,6 +40,19 @@ class MetanoiaApp extends StatelessWidget {
       iconTheme: const IconThemeData(color: textColor),
       cardColor: backgroundColor,
       dividerColor: textColor.withOpacity(0.2),
+      listTileTheme: ListTileThemeData(
+        iconColor: textColor,
+        textColor: textColor,
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: backgroundColor,
+        titleTextStyle: TextStyle(
+          color: textColor,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+        contentTextStyle: TextStyle(color: textColor),
+      ),
     );
     return MaterialApp.router(
       title: 'Metanoia',

@@ -1,13 +1,14 @@
 {
-    "name": "metanoia_flutter",
-    "short_name": "metanoia_flutter",
+    "name": "Metanoia - NHS Appraisal Made Easier",
+    "short_name": "Metanoia",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "NHS appraisal made easier - guided reflections and CPD tracking for doctors. Create structured reflections, track CPD activities, and improve clinical reasoning with AI-powered tools.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
+    "categories": ["medical", "education", "productivity"],
     "icons": [
         {
             "src": "icons/Icon-192.png",

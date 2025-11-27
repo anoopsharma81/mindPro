@@ -51,4 +51,128 @@ post_install do |installer|
       config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'PB_NO_PACKED_STRUCTS=1'
     end
   end
+  
+  # Fix FirebaseAuthInterop umbrella header issue
+  # This is a known issue with FirebaseAuthInterop and use_frameworks!
+  # The header file is at: FirebaseAuthInterop/FirebaseAuth/Interop/Public/FirebaseAuthInterop/FIRAuthInterop.h
+  # We need to ensure the header can be found during module compilation
+  
+  # First, add header search paths to all targets
+  # The header file is at: FirebaseAuthInterop/FirebaseAuth/Interop/Public/FirebaseAuthInterop/FIRAuthInterop.h
+  # So we need to add the directory that contains FIRAuthInterop.h
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      header_search_paths = config.build_settings['HEADER_SEARCH_PATHS'] || ['$(inherited)']
+      # Add the directory containing FIRAuthInterop.h
+      header_search_paths << '$(PODS_ROOT)/FirebaseAuthInterop/FirebaseAuth/Interop/Public/FirebaseAuthInterop'
+      # Also add parent directories as fallback
+      header_search_paths << '$(PODS_ROOT)/FirebaseAuthInterop/FirebaseAuth/Interop/Public'
+      config.build_settings['HEADER_SEARCH_PATHS'] = header_search_paths.uniq
+    end
+  end
+  
+  # Fix the umbrella header - try using the original simple import
+  # The original Firebase podspec expects: #import "FIRAuthInterop.h"
+  # But the file is in a subdirectory, so we need the search path to work
+  umbrella_header_path = File.join(installer.sandbox.root, 'Target Support Files', 'FirebaseAuthInterop', 'FirebaseAuthInterop-umbrella.h')
+  header_file_path = File.join(installer.sandbox.root, 'FirebaseAuthInterop', 'FirebaseAuth', 'Interop', 'Public', 'FirebaseAuthInterop', 'FIRAuthInterop.h')
+  
+  if File.exist?(umbrella_header_path) && File.exist?(header_file_path)
+    content = File.read(umbrella_header_path)
+    # Try the original format that Firebase expects: just the filename
+    # This should work if the header search path includes the parent directory
+    fixed_content = content.gsub(/^#import\s+[<"].*FIRAuthInterop.*[>"]$/, '#import "FIRAuthInterop.h"')
+    
+    if content != fixed_content
+      File.write(umbrella_header_path, fixed_content)
+      puts "Fixed FirebaseAuthInterop umbrella header to use simple import"
+    end
+  end
+  
+  # Fix umbrella headers - convert double-quoted includes to angle-bracketed
+  # This is required when using use_frameworks! - Xcode expects angle-bracketed includes for frameworks
+  umbrella_headers = [
+    ['AppAuth', 'AppAuth'],
+    ['GoogleUtilities', 'GoogleUtilities'],
+    ['FirebaseAppCheckInterop', 'FirebaseAppCheckInterop'],
+    ['FirebaseCore', 'FirebaseCore'],
+  ]
+  
+  umbrella_headers.each do |pod_name, framework_name|
+    umbrella_path = File.join(installer.sandbox.root, 'Target Support Files', pod_name, "#{pod_name}-umbrella.h")
+    if File.exist?(umbrella_path)
+      content = File.read(umbrella_path)
+      # Convert #import "Header.h" to #import <FrameworkName/Header.h>
+      fixed_content = content.gsub(/#import\s+"([^"]+\.h)"/) do |match|
+        header = $1
+        # Skip if already angle-bracketed or if it's a system header
+        if match.include?('<') || header.start_with?('UIKit/') || header.start_with?('Foundation/')
+          match
+        else
+          "#import <#{framework_name}/#{header}>"
+        end
+      end
+      
+      if content != fixed_content
+        File.write(umbrella_path, fixed_content)
+        puts "Fixed #{pod_name} umbrella header to use angle-bracketed includes"
+      end
+    end
+  end
+  
+  # Fix individual GoogleUtilities headers
+  google_utilities_headers = [
+    'GoogleUtilities/AppDelegateSwizzler/Public/GoogleUtilities/GULAppDelegateSwizzler.h',
+    'GoogleUtilities/Logger/Public/GoogleUtilities/GULLogger.h',
+    'GoogleUtilities/Network/Public/GoogleUtilities/GULNetwork.h',
+    'GoogleUtilities/Network/Public/GoogleUtilities/GULNetworkLoggerProtocol.h',
+    'GoogleUtilities/Network/Public/GoogleUtilities/GULNetworkURLSession.h',
+  ]
+  
+  google_utilities_headers.each do |header_path|
+    full_path = File.join(installer.sandbox.root, header_path)
+    if File.exist?(full_path)
+      # Make file writable
+      File.chmod(0644, full_path) rescue nil
+      content = File.read(full_path)
+      # Convert #import "GUL*.h" to #import <GoogleUtilities/GUL*.h>
+      fixed_content = content.gsub(/#import\s+"(GUL[^"]+\.h)"/, '#import <GoogleUtilities/\1>')
+      
+      if content != fixed_content
+        File.write(full_path, fixed_content)
+        puts "Fixed #{File.basename(header_path)} to use angle-bracketed includes"
+      end
+    end
+  end
+  
+  # Fix FirebaseAppCheckInterop header
+  firebase_appcheck_header = File.join(installer.sandbox.root, 'FirebaseAppCheckInterop', 'FirebaseAppCheck', 'Interop', 'Public', 'FirebaseAppCheckInterop', 'FirebaseAppCheckInterop.h')
+  if File.exist?(firebase_appcheck_header)
+    # Make file writable
+    File.chmod(0644, firebase_appcheck_header) rescue nil
+    content = File.read(firebase_appcheck_header)
+    fixed_content = content.gsub(/#import\s+"(FIR[^"]+\.h)"/, '#import <FirebaseAppCheckInterop/\1>')
+    
+    if content != fixed_content
+      File.write(firebase_appcheck_header, fixed_content)
+      puts "Fixed FirebaseAppCheckInterop header to use angle-bracketed includes"
+    end
+  end
+  
+  # Fix FirebaseCore header
+  firebase_core_header = File.join(installer.sandbox.root, 'FirebaseCore', 'FirebaseCore', 'Sources', 'Public', 'FirebaseCore', 'FirebaseCore.h')
+  if File.exist?(firebase_core_header)
+    # Make file writable
+    File.chmod(0644, firebase_core_header) rescue nil
+    content = File.read(firebase_core_header)
+    # Convert #import "FIR*.h" to #import <FirebaseCore/FIR*.h>
+    fixed_content = content.gsub(/#import\s+"(FIR[^"]+\.h)"/, '#import <FirebaseCore/\1>')
+    # Also fix FirebaseCore.h itself
+    fixed_content = fixed_content.gsub(/#import\s+"(FirebaseCore\.h)"/, '#import <FirebaseCore/\1>')
+    
+    if content != fixed_content
+      File.write(firebase_core_header, fixed_content)
+      puts "Fixed FirebaseCore header to use angle-bracketed includes"
+    end
+  end
 end

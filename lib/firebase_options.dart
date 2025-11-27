@@ -47,30 +47,30 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCa361ofmeJ1BPz2-N_qCrnwSBHMuX-hVI',
-    appId: '1:1083790628363:web:382a41969e9346e8c4590e',
-    messagingSenderId: '1083790628363',
-    projectId: 'metanoia-a3035',
-    authDomain: 'metanoia-a3035.firebaseapp.com',
-    storageBucket: 'metanoia-a3035.firebasestorage.app',
-    measurementId: 'G-PLVLE06WR7',
+    apiKey: 'AIzaSyDbhR0ywnmOOqiZ2cmfxQe0uBFsAVlTY24',
+    appId: '1:639783242016:web:e05fde7cf3870a8804af45',
+    messagingSenderId: '639783242016',
+    projectId: 'mindclon-dev',
+    authDomain: 'mindclon-dev.firebaseapp.com',
+    storageBucket: 'mindclon-dev.firebasestorage.app',
+    measurementId: 'G-CTEGND8XCV',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBLbd4KuGL9pHt1ERBMQvgq0fyULnCrgkw',
-    appId: '1:1083790628363:android:e42d61f21952047bc4590e',
-    messagingSenderId: '1083790628363',
-    projectId: 'metanoia-a3035',
-    storageBucket: 'metanoia-a3035.firebasestorage.app',
+    apiKey: 'AIzaSyCeSgMoGlXKNPkXKlIory_ddfz3yX8zHJY',
+    appId: '1:639783242016:android:357ef9792b9c57a104af45',
+    messagingSenderId: '639783242016',
+    projectId: 'mindclon-dev',
+    storageBucket: 'mindclon-dev.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDOvTUjIonJF-VksYowpX52IaC4KukvCIw',
-    appId: '1:1083790628363:ios:3bea9c1aba4b9b3ec4590e',
-    messagingSenderId: '1083790628363',
-    projectId: 'metanoia-a3035',
-    storageBucket: 'metanoia-a3035.firebasestorage.app',
-    iosBundleId: 'com.example.metanoiaFlutter',
+    apiKey: 'AIzaSyACeNqSepBVHkTPYWLrzkEJvdeFIUAlO90',
+    appId: '1:639783242016:ios:8e439e0e4fac797504af45',
+    messagingSenderId: '639783242016',
+    projectId: 'mindclon-dev',
+    storageBucket: 'mindclon-dev.firebasestorage.app',
+    iosBundleId: 'com.metanoia.flutter.v2',
   );
 
 }

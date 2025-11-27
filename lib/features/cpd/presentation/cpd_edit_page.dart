@@ -55,6 +55,10 @@ class _CpdEditPageState extends ConsumerState<CpdEditPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(isEdit? 'Edit CPD' : 'New CPD'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/cpd'),
+        ),
         actions:[ if(isEdit) IconButton(onPressed:_delete, icon: const Icon(Icons.delete)) ],
       ),
       body: SingleChildScrollView(
@@ -71,8 +75,13 @@ class _CpdEditPageState extends ConsumerState<CpdEditPage> {
           const SizedBox(height: 12),
           TextField(controller: _hours, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Hours')),
           const SizedBox(height: 12),
-          Row(children:[
-            Text('Date: ${_date.toIso8601String().substring(0,10)}'),
+            Row(children:[
+            Text(
+              'Date: ${_date.toIso8601String().substring(0,10)}',
+              style: const TextStyle(
+                color: Color(0xFFF5F3F0),
+              ),
+            ),
             const Spacer(),
             OutlinedButton(
               onPressed: () async {

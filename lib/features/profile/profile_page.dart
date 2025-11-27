@@ -137,9 +137,23 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                         // Default year
                         if (profile != null)
                           ListTile(
-                            leading: const Icon(Icons.calendar_today),
-                            title: const Text('Default Year'),
-                            subtitle: Text(profile.defaultYear),
+                            leading: const Icon(
+                              Icons.calendar_today,
+                              color: Color(0xFFF5F3F0),
+                            ),
+                            title: const Text(
+                              'Default Year',
+                              style: TextStyle(
+                                color: Color(0xFFF5F3F0),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            subtitle: Text(
+                              profile.defaultYear,
+                              style: TextStyle(
+                                color: const Color(0xFFF5F3F0).withValues(alpha: 0.7),
+                              ),
+                            ),
                             contentPadding: EdgeInsets.zero,
                           ),
                         
@@ -200,18 +214,40 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                         
                         availableYears.when(
                           data: (years) => years.isEmpty
-                            ? const Text('No years configured yet')
+                            ? Text(
+                                'No years configured yet',
+                                style: TextStyle(
+                                  color: const Color(0xFFF5F3F0).withValues(alpha: 0.7),
+                                ),
+                              )
                             : Column(
                                 children: years.map((year) => ListTile(
-                                  leading: const Icon(Icons.event),
-                                  title: Text(year),
-                                  trailing: const Icon(Icons.chevron_right),
+                                  leading: const Icon(
+                                    Icons.event,
+                                    color: Color(0xFFF5F3F0),
+                                  ),
+                                  title: Text(
+                                    year,
+                                    style: const TextStyle(
+                                      color: Color(0xFFF5F3F0),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  trailing: const Icon(
+                                    Icons.chevron_right,
+                                    color: Color(0xFFF5F3F0),
+                                  ),
                                   onTap: () => _editYear(context, year),
                                   contentPadding: EdgeInsets.zero,
                                 )).toList(),
                               ),
                           loading: () => const CircularProgressIndicator(),
-                          error: (_, __) => const Text('Error loading years'),
+                          error: (_, __) => Text(
+                            'Error loading years',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.error,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -222,7 +258,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('Error: $error')),
+        error: (error, stack) => Center(
+          child: Text(
+            'Error: $error',
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.error,
+            ),
+          ),
+        ),
       ),
       bottomNavigationBar: const BottomNavBar(),
     );

@@ -28,7 +28,7 @@ class _SelfPlayRunnerState extends ConsumerState<SelfPlayRunner> {
   bool _isComplete = false;
   Map<String, dynamic>? _result;
   String? _errorMessage;
-  int _iterations = 3;
+  int _iterations = 1; // Reduced from 3 for faster results
   int? _userRating;
   
   Future<void> _runSelfPlay() async {
@@ -133,6 +133,10 @@ Now what (action): ${widget.reflection.nowWhat}
     return Scaffold(
       appBar: AppBar(
         title: const Text('AI Reflection Improvement'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -233,17 +237,33 @@ Now what (action): ${widget.reflection.nowWhat}
                         children: [
                           Icon(Icons.error_outline, color: Theme.of(context).colorScheme.error),
                           const SizedBox(width: 8),
-                          Text(
-                            'Error',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.error,
+                          Expanded(
+                            child: Text(
+                              'Error',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.error,
+                              ),
                             ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close, color: Colors.black),
+                            onPressed: () {
+                              setState(() {
+                                _errorMessage = null;
+                              });
+                            },
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            tooltip: 'Dismiss',
                           ),
                         ],
                       ),
                       const SizedBox(height: 8),
-                      Text(_errorMessage!),
+                      Text(
+                        _errorMessage!,
+                        style: const TextStyle(color: Colors.black),
+                      ),
                     ],
                   ),
                 ),

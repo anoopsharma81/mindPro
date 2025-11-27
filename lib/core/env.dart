@@ -42,14 +42,14 @@ class Env {
       return apiBaseUrl;
     }
     
-    // Use local development server for dev
-    if (isDev) {
-      return 'http://Anups-Laptop.local:3001/api';
-    }
-    
-    // Use Firebase Functions for production
-    return 'https://YOUR_REGION-YOUR_PROJECT.cloudfunctions.net/api';
+    // Use Firebase Functions by default (works without Mac connection)
+    // Project: mindclon-dev, Region: europe-west2
+    return 'https://europe-west2-mindclon-dev.cloudfunctions.net';
   }
+  
+  // Check if using Firebase Functions (callable functions)
+  static bool get useFirebaseFunctions => 
+      getApiUrl().contains('cloudfunctions.net');
   
   // Sentry
   static const String sentryDsn = String.fromEnvironment(

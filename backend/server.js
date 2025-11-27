@@ -665,23 +665,28 @@ app.post('/api/learning-loop/generate', verifyFirebaseToken, async (req, res) =>
     
     console.log('   Calling OpenAI GPT-4o for Learning Loop generation...');
     
-    // Call OpenAI with Learning Loop prompts
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [
-        {
-          role: 'system',
-          content: systemPrompt
-        },
-        {
-          role: 'user',
-          content: userPrompt
-        }
-      ],
-      response_format: { type: 'json_object' },
-      temperature: 0.7,
-      max_tokens: 3000
-    });
+    // Call OpenAI with Learning Loop prompts (with timeout for long-running requests)
+    const completion = await Promise.race([
+      openai.chat.completions.create({
+        model: 'gpt-4o',
+        messages: [
+          {
+            role: 'system',
+            content: systemPrompt
+          },
+          {
+            role: 'user',
+            content: userPrompt
+          }
+        ],
+        response_format: { type: 'json_object' },
+        temperature: 0.7,
+        max_tokens: 3000
+      }),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('OpenAI API timeout after 90 seconds')), 90000)
+      )
+    ]);
     
     const learningLoop = JSON.parse(completion.choices[0].message.content);
     

@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { extractReflection } from './extractReflection';
+import * as apiFunctions from './apiFunctions';
 
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -41,7 +42,7 @@ export const extractReflectionFromDocument = functions
   .runWith({
     timeoutSeconds: 540, // 9 minutes (max for Cloud Functions)
     memory: '512MB',
-    secrets: ['OPENAI_API_KEY', 'GOOGLE_CLOUD_PROJECT_ID'],
+    secrets: ['OPENAI_API_KEY'],
   })
   .https.onCall(async (data, context) => {
     const startTime = Date.now();
@@ -143,5 +144,14 @@ export const healthCheck = functions
       version: '1.0.0',
     });
   });
+
+// Export all API functions
+export const extract = apiFunctions.extract;
+export const transcribeAudio = apiFunctions.transcribeAudio;
+export const structureTranscription = apiFunctions.structureTranscription;
+export const selfPlay = apiFunctions.selfPlay;
+export const reinforce = apiFunctions.reinforce;
+export const autoTagCpd = apiFunctions.autoTagCpd;
+export const generateLearningLoop = apiFunctions.generateLearningLoop;
 
 

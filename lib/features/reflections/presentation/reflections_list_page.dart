@@ -44,7 +44,11 @@ class _ReflectionsListPageState extends ConsumerState<ReflectionsListPage> {
           children: [
             const Text(
               'Create Reflection',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFF5F3F0),
+              ),
             ),
             const SizedBox(height: 16),
             
@@ -58,8 +62,19 @@ class _ReflectionsListPageState extends ConsumerState<ReflectionsListPage> {
                 ),
                 child: Icon(Icons.edit, color: Colors.blue.shade700),
               ),
-              title: const Text('Write Manually'),
-              subtitle: const Text('Type your reflection'),
+              title: const Text(
+                'Write Manually',
+                style: TextStyle(
+                  color: Color(0xFFF5F3F0),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              subtitle: Text(
+                'Type your reflection',
+                style: TextStyle(
+                  color: const Color(0xFFF5F3F0).withValues(alpha: 0.7),
+                ),
+              ),
               onTap: () {
                 Navigator.pop(sheetContext);
                 context.go('/reflections/new');
@@ -77,8 +92,19 @@ class _ReflectionsListPageState extends ConsumerState<ReflectionsListPage> {
                 ),
                 child: Icon(Icons.mic, color: Colors.red.shade700),
               ),
-              title: const Text('Record Voice Note'),
-              subtitle: const Text('Speak and transcribe'),
+              title: const Text(
+                'Record Voice Note',
+                style: TextStyle(
+                  color: Color(0xFFF5F3F0),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              subtitle: Text(
+                'Speak and transcribe',
+                style: TextStyle(
+                  color: const Color(0xFFF5F3F0).withValues(alpha: 0.7),
+                ),
+              ),
               onTap: () {
                 Navigator.pop(sheetContext);
                 Navigator.push(
@@ -103,8 +129,19 @@ class _ReflectionsListPageState extends ConsumerState<ReflectionsListPage> {
                 ),
                 child: const Icon(Icons.auto_awesome, color: Colors.white),
               ),
-              title: const Text('Extract from Document'),
-              subtitle: const Text('AI extracts from any file type'),
+              title: const Text(
+                'Extract from Document',
+                style: TextStyle(
+                  color: Color(0xFFF5F3F0),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              subtitle: Text(
+                'AI extracts from any file type',
+                style: TextStyle(
+                  color: const Color(0xFFF5F3F0).withValues(alpha: 0.7),
+                ),
+              ),
               onTap: () {
                 Navigator.pop(sheetContext);
                 DocumentSourceSelector.show(

@@ -206,7 +206,10 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                   value: 'profile',
                   child: Row(
                     children: [
-                      const Icon(Icons.person),
+                      const Icon(
+                        Icons.person,
+                        color: Colors.black,
+                      ),
                       const SizedBox(width: 12),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -214,12 +217,18 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                         children: [
                           Text(
                             profile?.displayName ?? user?.email ?? 'User',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
                           ),
                           if (user?.email != null)
                             Text(
                               user!.email!,
-                              style: const TextStyle(fontSize: 12, color: Colors.grey),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.black.withValues(alpha: 0.7),
+                              ),
                             ),
                         ],
                       ),
@@ -227,33 +236,60 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                   ),
                 ),
                 const PopupMenuDivider(),
-                const PopupMenuItem<String>(
+                PopupMenuItem<String>(
                   value: 'notifications',
                   child: Row(
                     children: [
-                      Icon(Icons.notifications),
-                      SizedBox(width: 12),
-                      Text('Notifications'),
+                      const Icon(
+                        Icons.notifications,
+                        color: Colors.black,
+                      ),
+                      const SizedBox(width: 12),
+                      const Text(
+                        'Notifications',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                        ),
+                      ),
                     ],
                   ),
                 ),
-                const PopupMenuItem<String>(
+                PopupMenuItem<String>(
                   value: 'settings',
                   child: Row(
                     children: [
-                      Icon(Icons.settings),
-                      SizedBox(width: 12),
-                      Text('Settings'),
+                      const Icon(
+                        Icons.settings,
+                        color: Colors.black,
+                      ),
+                      const SizedBox(width: 12),
+                      const Text(
+                        'Settings',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                        ),
+                      ),
                     ],
                   ),
                 ),
-                const PopupMenuItem<String>(
+                PopupMenuItem<String>(
                   value: 'export',
                   child: Row(
                     children: [
-                      Icon(Icons.file_download),
-                      SizedBox(width: 12),
-                      Text('Export'),
+                      const Icon(
+                        Icons.file_download,
+                        color: Colors.black,
+                      ),
+                      const SizedBox(width: 12),
+                      const Text(
+                        'Export',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -264,7 +300,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                     children: [
                       Icon(Icons.logout, color: Colors.red),
                       SizedBox(width: 12),
-                      Text('Sign Out', style: TextStyle(color: Colors.red)),
+                      Text('Sign Out', style: TextStyle(color: Colors.red, fontWeight: FontWeight.w500)),
                     ],
                   ),
                 ),

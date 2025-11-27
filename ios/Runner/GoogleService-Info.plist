@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyDOvTUjIonJF-VksYowpX52IaC4KukvCIw</string>
+	<string>AIzaSyACeNqSepBVHkTPYWLrzkEJvdeFIUAlO90</string>
 	<key>GCM_SENDER_ID</key>
-	<string>1083790628363</string>
+	<string>639783242016</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.metanoiaFlutter</string>
+	<string>com.metanoia.flutter.v2</string>
 	<key>PROJECT_ID</key>
-	<string>metanoia-a3035</string>
+	<string>mindclon-dev</string>
 	<key>STORAGE_BUCKET</key>
-	<string>metanoia-a3035.firebasestorage.app</string>
+	<string>mindclon-dev.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:1083790628363:ios:3bea9c1aba4b9b3ec4590e</string>
+	<string>1:639783242016:ios:8e439e0e4fac797504af45</string>
 </dict>
 </plist>

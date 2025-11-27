@@ -208,8 +208,20 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           // Account section
           ListTile(
             leading: const Icon(Icons.person),
-            title: const Text('Account'),
-            subtitle: Text(user?.email ?? 'Not logged in'),
+            title: Text(
+              'Account',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFFF5F3F0),
+              ),
+            ),
+            subtitle: Text(
+              user?.email ?? 'Not logged in',
+              style: TextStyle(
+                color: const Color(0xFFF5F3F0).withValues(alpha: 0.8),
+                fontSize: 14,
+              ),
+            ),
           ),
           const Divider(),
           
@@ -218,13 +230,22 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             padding: const EdgeInsets.all(16),
             child: Text(
               'Privacy & Data',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFFF5F3F0),
+              ),
             ),
           ),
           
           ListTile(
             leading: const Icon(Icons.policy),
-            title: const Text('Privacy Policy'),
+            title: Text(
+              'Privacy Policy',
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFFF5F3F0),
+              ),
+            ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
               Navigator.of(context).push(
@@ -237,8 +258,19 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           
           SwitchListTile(
             secondary: const Icon(Icons.analytics),
-            title: const Text('Anonymous Analytics'),
-            subtitle: const Text('Help improve Metanoia with usage data'),
+            title: Text(
+              'Anonymous Analytics',
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFFF5F3F0),
+              ),
+            ),
+            subtitle: Text(
+              'Help improve Metanoia with usage data',
+              style: TextStyle(
+                color: const Color(0xFFF5F3F0).withValues(alpha: 0.7),
+              ),
+            ),
             value: _analyticsEnabled,
             onChanged: (value) {
               setState(() => _analyticsEnabled = value);
@@ -248,8 +280,19 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           
           SwitchListTile(
             secondary: const Icon(Icons.bug_report),
-            title: const Text('Crash Reports'),
-            subtitle: const Text('Send anonymous crash reports'),
+            title: Text(
+              'Crash Reports',
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFFF5F3F0),
+              ),
+            ),
+            subtitle: Text(
+              'Send anonymous crash reports',
+              style: TextStyle(
+                color: const Color(0xFFF5F3F0).withValues(alpha: 0.7),
+              ),
+            ),
             value: _crashReportsEnabled,
             onChanged: (value) {
               setState(() => _crashReportsEnabled = value);
@@ -264,16 +307,35 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             padding: const EdgeInsets.all(16),
             child: Text(
               'Reminders',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFFF5F3F0),
+              ),
             ),
           ),
           
           SwitchListTile(
             secondary: const Icon(Icons.notifications),
-            title: const Text('Weekly Reflection Reminder'),
+            title: Text(
+              'Weekly Reflection Reminder',
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFFF5F3F0),
+              ),
+            ),
             subtitle: _remindersEnabled
-                ? Text('${_getDayName(_reminderDay)} at ${_reminderTime.format(context)}')
-                : const Text('Never miss a reflection'),
+                ? Text(
+                    '${_getDayName(_reminderDay)} at ${_reminderTime.format(context)}',
+                    style: TextStyle(
+                      color: const Color(0xFFF5F3F0).withValues(alpha: 0.7),
+                    ),
+                  )
+                : Text(
+                    'Never miss a reflection',
+                    style: TextStyle(
+                      color: const Color(0xFFF5F3F0).withValues(alpha: 0.7),
+                    ),
+                  ),
             value: _remindersEnabled,
             onChanged: (value) {
               setState(() => _remindersEnabled = value);
@@ -284,7 +346,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           if (_remindersEnabled) ...[
             ListTile(
               leading: const SizedBox(width: 40),
-              title: const Text('Reminder Day'),
+              title: Text(
+                'Reminder Day',
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFFF5F3F0),
+                ),
+              ),
               trailing: DropdownButton<int>(
                 value: _reminderDay,
                 items: const [
@@ -306,7 +374,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             ),
             ListTile(
               leading: const SizedBox(width: 40),
-              title: const Text('Reminder Time'),
+              title: Text(
+                'Reminder Time',
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFFF5F3F0),
+                ),
+              ),
               trailing: TextButton(
                 onPressed: () async {
                   final time = await showTimePicker(
@@ -330,14 +404,28 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             padding: const EdgeInsets.all(16),
             child: Text(
               'Data Management',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFFF5F3F0),
+              ),
             ),
           ),
           
           ListTile(
             leading: const Icon(Icons.download),
-            title: const Text('Export All Data'),
-            subtitle: const Text('Download your complete portfolio'),
+            title: Text(
+              'Export All Data',
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFFF5F3F0),
+              ),
+            ),
+            subtitle: Text(
+              'Download your complete portfolio',
+              style: TextStyle(
+                color: const Color(0xFFF5F3F0).withValues(alpha: 0.7),
+              ),
+            ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
               context.go('/export');
@@ -351,9 +439,17 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             ),
             title: Text(
               'Delete All Data',
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.error,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-            subtitle: const Text('Remove all reflections and CPD entries'),
+            subtitle: Text(
+              'Remove all reflections and CPD entries',
+              style: TextStyle(
+                color: const Color(0xFFF5F3F0).withValues(alpha: 0.7),
+              ),
+            ),
             onTap: _deleteAllData,
           ),
           
@@ -364,7 +460,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             padding: const EdgeInsets.all(16),
             child: Text(
               'Danger Zone',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
                 color: Theme.of(context).colorScheme.error,
               ),
             ),
@@ -377,9 +474,17 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             ),
             title: Text(
               'Delete Account',
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.error,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-            subtitle: const Text('Permanently delete your account and all data'),
+            subtitle: Text(
+              'Permanently delete your account and all data',
+              style: TextStyle(
+                color: const Color(0xFFF5F3F0).withValues(alpha: 0.7),
+              ),
+            ),
             onTap: _deleteAccount,
           ),
           

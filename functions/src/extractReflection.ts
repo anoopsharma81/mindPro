@@ -1,7 +1,17 @@
-import { ocrService } from './ocrService';
+// import { ocrService } from './ocrService';
 import { aiService, ReflectionData } from './aiService';
 import { phiDetector } from './phiDetector';
 import * as functions from 'firebase-functions';
+import OpenAI from 'openai';
+
+// Lazy initialization to avoid errors during Firebase analysis
+function getOpenAI(): OpenAI {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error('OPENAI_API_KEY environment variable not set');
+  }
+  return new OpenAI({ apiKey });
+}
 
 export interface ExtractionRequest {
   photoUrl: string;
@@ -23,9 +33,42 @@ export async function extractReflection(
   const { photoUrl, mimeType } = request;
 
   try {
-    // Step 1: Extract text using OCR/PDF parsing
-    functions.logger.info('Step 1: Extracting text');
-    const extractedText = await ocrService.extractText(photoUrl, mimeType);
+    // Step 1: Extract text using GPT-4o Vision (OCR service disabled)
+    functions.logger.info('Step 1: Extracting text using GPT-4o Vision');
+    
+    // Download file from Firebase Storage
+    const fileResponse = await fetch(photoUrl);
+    if (!fileResponse.ok) {
+      throw new Error(`Failed to download file: ${fileResponse.statusText}`);
+    }
+    
+    const fileBuffer = Buffer.from(await fileResponse.arrayBuffer());
+    const base64Image = fileBuffer.toString('base64');
+
+    // Use GPT-4o Vision to extract content
+    const visionResponse = await getOpenAI().chat.completions.create({
+      model: 'gpt-4o',
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'image_url',
+              image_url: {
+                url: `data:${mimeType};base64,${base64Image}`,
+              },
+            },
+            {
+              type: 'text',
+              text: 'Extract all text from this image. Return only the extracted text, no formatting or analysis.',
+            },
+          ],
+        },
+      ],
+      max_tokens: 2000,
+    });
+
+    const extractedText = visionResponse.choices[0]?.message?.content || '';
 
     if (!extractedText || extractedText.trim().length < 10) {
       throw new Error('No meaningful text found in document');

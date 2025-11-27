@@ -18,14 +18,23 @@ export interface ReflectionData {
  * AI Service using OpenAI GPT-3.5 Turbo
  */
 export class AiService {
-  private openai: OpenAI;
+  private openai: OpenAI | null = null;
 
   constructor() {
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) {
-      throw new Error('OPENAI_API_KEY environment variable not set');
+    // Don't initialize OpenAI here - will be initialized lazily
+    // This allows Firebase to analyze the code without the secret being set
+    this.openai = null as any;
+  }
+
+  private getOpenAI(): OpenAI {
+    if (!this.openai) {
+      const apiKey = process.env.OPENAI_API_KEY;
+      if (!apiKey) {
+        throw new Error('OPENAI_API_KEY environment variable not set');
+      }
+      this.openai = new OpenAI({ apiKey });
     }
-    this.openai = new OpenAI({ apiKey });
+    return this.openai;
   }
 
   /**
@@ -39,7 +48,7 @@ export class AiService {
 
       const prompt = this.buildPrompt(extractedText);
 
-      const completion = await this.openai.chat.completions.create({
+      const completion = await this.getOpenAI().chat.completions.create({
         model: 'gpt-3.5-turbo',
         messages: [
           {

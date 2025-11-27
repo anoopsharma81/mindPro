@@ -205,11 +205,22 @@ class _CpdListPageState extends ConsumerState<CpdListPage> {
                     itemBuilder: (c,i){
                 final e=_filteredItems[i];
                 return ListTile(
-                  title: Text(e.title),
+                  title: Text(
+                    e.title,
+                    style: const TextStyle(
+                      color: Color(0xFFF5F3F0),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('${e.type.name} • ${e.hours}h • ${e.date.toString().substring(0, 10)}'),
+                      Text(
+                        '${e.type.name} • ${e.hours}h • ${e.date.toString().substring(0, 10)}',
+                        style: TextStyle(
+                          color: const Color(0xFFF5F3F0).withValues(alpha: 0.7),
+                        ),
+                      ),
                       if (e.domains.isNotEmpty) ...[
                         const SizedBox(height: 4),
                         GmcDomainChips(domains: e.domains, compact: true),

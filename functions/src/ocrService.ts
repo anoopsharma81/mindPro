@@ -1,15 +1,18 @@
-import vision from '@google-cloud/vision';
+// import vision from '@google-cloud/vision';
 import * as functions from 'firebase-functions';
-import axios from 'axios';
+// import axios from 'axios';
+
+// Note: OCR service temporarily disabled - using GPT-4o Vision instead
+// To enable: npm install @google-cloud/vision axios
 
 /**
  * OCR Service using Google Cloud Vision API
  */
 export class OcrService {
-  private client: vision.ImageAnnotatorClient;
+  // private client: vision.ImageAnnotatorClient;
 
   constructor() {
-    this.client = new vision.ImageAnnotatorClient();
+    // this.client = new vision.ImageAnnotatorClient();
   }
 
   /**
@@ -20,30 +23,18 @@ export class OcrService {
       functions.logger.info('Starting OCR extraction', { imageUrl });
 
       // Download image from Firebase Storage
-      const response = await axios.get(imageUrl, {
-        responseType: 'arraybuffer',
-      });
-      const imageBuffer = Buffer.from(response.data);
+      // const response = await axios.get(imageUrl, {
+      //   responseType: 'arraybuffer',
+      // });
+      // const imageBuffer = Buffer.from(response.data);
 
       // Perform text detection
-      const [result] = await this.client.textDetection({
-        image: { content: imageBuffer },
-      });
-
-      const detections = result.textAnnotations;
-
-      if (!detections || detections.length === 0) {
-        throw new Error('No text detected in image');
-      }
-
-      // First annotation contains all detected text
-      const extractedText = detections[0].description || '';
-
-      functions.logger.info('OCR extraction successful', {
-        textLength: extractedText.length,
-      });
-
-      return extractedText.trim();
+      // const [result] = await this.client.textDetection({
+      //   image: { content: imageBuffer },
+      // });
+      
+      // Temporarily disabled - using GPT-4o Vision instead
+      throw new Error('OCR service disabled - use GPT-4o Vision');
     } catch (error: any) {
       functions.logger.error('OCR extraction failed', {
         error: error.message,
@@ -60,23 +51,17 @@ export class OcrService {
       functions.logger.info('Starting PDF text extraction', { pdfUrl });
 
       // Download PDF
-      const response = await axios.get(pdfUrl, {
-        responseType: 'arraybuffer',
-      });
-      const pdfBuffer = Buffer.from(response.data);
+      // const response = await axios.get(pdfUrl, {
+      //   responseType: 'arraybuffer',
+      // });
+      // const pdfBuffer = Buffer.from(response.data);
 
       // Use pdf-parse library
-      const pdfParse = require('pdf-parse');
-      const data = await pdfParse(pdfBuffer);
-
-      const extractedText = data.text;
-
-      functions.logger.info('PDF extraction successful', {
-        textLength: extractedText.length,
-        pages: data.numpages,
-      });
-
-      return extractedText.trim();
+      // const pdfParse = require('pdf-parse');
+      // const data = await pdfParse(pdfBuffer);
+      
+      // Temporarily disabled
+      throw new Error('PDF extraction disabled - use GPT-4o Vision');
     } catch (error: any) {
       functions.logger.error('PDF extraction failed', {
         error: error.message,
@@ -95,8 +80,9 @@ export class OcrService {
       return this.extractTextFromPdf(fileUrl);
     } else if (mimeType === 'text/plain') {
       // Plain text - just download and return
-      const response = await axios.get(fileUrl);
-      return response.data;
+      // const response = await axios.get(fileUrl);
+      // return response.data;
+      throw new Error('Text extraction disabled - use GPT-4o Vision');
     } else {
       throw new Error(`Unsupported MIME type: ${mimeType}`);
     }

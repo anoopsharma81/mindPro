@@ -50,18 +50,27 @@ class HelpTooltip extends StatelessWidget {
           color: Theme.of(context).colorScheme.primary,
           size: 48,
         ),
-        title: Text(title),
+        title: Text(
+          title,
+          style: const TextStyle(color: Colors.black),
+        ),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(content),
+              Text(
+                content,
+                style: const TextStyle(color: Colors.black),
+              ),
               if (tips != null && tips.isNotEmpty) ...[
                 const SizedBox(height: 16),
                 const Text(
                   'Tips:',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 ...tips.map((tip) => Padding(
@@ -69,8 +78,16 @@ class HelpTooltip extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('• '),
-                      Expanded(child: Text(tip)),
+                      const Text(
+                        '• ',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      Expanded(
+                        child: Text(
+                          tip,
+                          style: const TextStyle(color: Colors.black),
+                        ),
+                      ),
                     ],
                   ),
                 )),
@@ -81,7 +98,10 @@ class HelpTooltip extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Got it'),
+            child: const Text(
+              'Got it',
+              style: TextStyle(color: Colors.black),
+            ),
           ),
         ],
       ),
@@ -105,7 +125,7 @@ class HelpButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      icon: const Icon(Icons.help_outline),
+      icon: const Icon(Icons.help_outline, color: Colors.black),
       tooltip: 'Help',
       onPressed: () => HelpTooltip.showHelpDialog(
         context,

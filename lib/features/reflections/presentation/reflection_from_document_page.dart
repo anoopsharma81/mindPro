@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -355,6 +356,10 @@ class _ReflectionFromDocumentPageState
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create Reflection'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/reflections'),
+        ),
       ),
       body: const Center(
         child: CircularProgressIndicator(),

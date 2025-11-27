@@ -178,6 +178,10 @@ class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(isEdit? 'Edit Reflection' : 'New Reflection'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/reflections'),
+        ),
         actions: [
           if (!isEdit)
             IconButton(
@@ -224,24 +228,37 @@ class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'exit',
                 child: Row(
                   children: [
-                    Icon(Icons.exit_to_app, size: 20),
-                    SizedBox(width: 12),
-                    Text('Exit without saving'),
+                    const Icon(
+                      Icons.exit_to_app,
+                      size: 20,
+                      color: Color(0xFFF5F3F0),
+                    ),
+                    const SizedBox(width: 12),
+                    const Text(
+                      'Exit without saving',
+                      style: TextStyle(
+                        color: Color(0xFFF5F3F0),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ],
                 ),
               ),
               if (isEdit)
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'delete',
                   child: Row(
                     children: [
-                      Icon(Icons.delete, size: 20, color: Colors.red),
-                      SizedBox(width: 12),
-                      Text('Delete reflection', style: TextStyle(color: Colors.red)),
+                      const Icon(Icons.delete, size: 20, color: Colors.red),
+                      const SizedBox(width: 12),
+                      const Text(
+                        'Delete reflection',
+                        style: TextStyle(color: Colors.red, fontWeight: FontWeight.w500),
+                      ),
                     ],
                   ),
                 ),

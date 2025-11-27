@@ -37,13 +37,21 @@ See [QUICK_START.md](QUICK_START.md) for a 5-minute setup guide.
 - [PILOT_LAUNCH_READY.md](PILOT_LAUNCH_READY.md) - Launch checklist
 - [PROJECT_COMPLETE.md](PROJECT_COMPLETE.md) - Complete project overview
 
+### App Store Launch
+
+- [APP_STORE_LAUNCH_PLAN.md](APP_STORE_LAUNCH_PLAN.md) - Complete App Store submission guide
+- [APP_STORE_QUICK_START.md](APP_STORE_QUICK_START.md) - Quick start checklist for App Store launch
+- [IOS_TESTFLIGHT_SETUP.md](IOS_TESTFLIGHT_SETUP.md) - TestFlight beta testing setup
+
 ### Getting Started (Development)
 
 ```bash
 # Install dependencies
 flutter pub get
 
-# Run on iOS
+# Run on iOS (recommended: use helper script to avoid stuck "Installing..." issue)
+./run_ios.sh
+# OR
 flutter run -d ios
 
 # Run on Android
@@ -52,6 +60,8 @@ flutter run -d android
 # Run on Web
 flutter run -d chrome
 ```
+
+**Note**: If `flutter run` gets stuck at "Installing and launching..." on iOS, use `./run_ios.sh` instead. See [README_IOS.md](README_IOS.md) for details.
 
 ### Environment Setup
 
