@@ -448,18 +448,24 @@ class ApiService {
   Future<Map<String, dynamic>> structureTranscription({
     required String transcription,
   }) async {
+    Logger.info('structureTranscription called with input length: ${transcription.length}');
+    Logger.info('Input text preview: "${transcription.length > 100 ? '${transcription.substring(0, 100)}...' : transcription}"');
+    
     if (Env.useFirebaseFunctions) {
       // Use Firebase Callable Function
       try {
+        Logger.info('Using Firebase Function structureTranscription');
         final callable = _functions.httpsCallable(
           'structureTranscription',
           options: HttpsCallableOptions(
             timeout: const Duration(seconds: 300), // 5 minutes for AI processing
           ),
         );
+        Logger.info('Calling Firebase function with transcription: "$transcription"');
         final result = await callable.call({
           'transcription': transcription,
         });
+        Logger.info('Firebase function returned: ${result.data}');
         return result.data as Map<String, dynamic>;
       } on FirebaseFunctionsException catch (e, stack) {
         // Extract error details more thoroughly
@@ -647,12 +653,15 @@ class ApiService {
     
     // Fallback to HTTP backend (only if not using Firebase Functions)
     try {
+      Logger.info('Using HTTP backend for structureTranscription');
+      Logger.info('POST /reflections/structure with transcription: "$transcription"');
       final response = await _dio.post(
         '/reflections/structure',
         data: {
           'transcription': transcription,
         },
       );
+      Logger.info('HTTP backend returned: ${response.data}');
       return response.data as Map<String, dynamic>;
     } catch (e, stack) {
       Logger.error('Structure transcription HTTP backend call failed', e, stack);

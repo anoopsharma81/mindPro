@@ -184,11 +184,11 @@ export const structureTranscription = functions
         messages: [
           {
             role: 'system',
-            content: 'You are an AI assistant that structures voice transcriptions into professional medical reflections using the "What? So What? Now What?" framework.',
+            content: 'You are an expert NHS clinical educator helping doctors structure their reflections using the "What? So What? Now What?" framework.\n\nConvert the input text (which may be typed text, voice transcription, or notes) into a structured reflection.\n\nReturn JSON with:\n{\n  "title": "Brief, descriptive title based on the content",\n  "what": "What happened? (objective description)",\n  "soWhat": "So what? (analysis, learning, significance)",\n  "nowWhat": "Now what? (action plan for future)",\n  "tags": ["tag1", "tag2"],\n  "suggestedDomains": [1, 2] // GMC domains 1-4\n}',
           },
           {
             role: 'user',
-            content: `Structure this transcription into a reflection:\n\n${transcription}\n\nReturn JSON with: title, what, soWhat, nowWhat, tags (array), suggestedDomains (array of numbers 1-4).`,
+            content: `Structure this text into a professional medical reflection:\n\n${transcription}\n\nCreate a meaningful title and structure the content using the What? So What? Now What? framework. Return JSON with: title, what, soWhat, nowWhat, tags (array), suggestedDomains (array of numbers 1-4).`,
           },
         ],
         response_format: { type: 'json_object' },

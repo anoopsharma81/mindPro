@@ -12,6 +12,46 @@ import 'selfplay_runner.dart';
 import 'reflection_templates.dart';
 import 'widgets/audio_player_widget.dart';
 
+/// Provider to hold initial reflection data for new reflections
+class InitialReflectionData {
+  final String? title;
+  final String? what;
+  final String? soWhat;
+  final String? nowWhat;
+  final List<String> tags;
+  final List<int>? domains;
+  
+  InitialReflectionData({
+    this.title,
+    this.what,
+    this.soWhat,
+    this.nowWhat,
+    this.tags = const [],
+    this.domains,
+  });
+}
+
+/// Simple holder for initial reflection data
+class InitialReflectionDataHolder {
+  InitialReflectionData? _data;
+  
+  InitialReflectionData? get data => _data;
+  
+  void setData(InitialReflectionData? data) {
+    _data = data;
+  }
+  
+  void clear() {
+    _data = null;
+  }
+}
+
+final initialReflectionDataHolder = InitialReflectionDataHolder();
+
+final initialReflectionDataProvider = Provider<InitialReflectionData?>((ref) {
+  return initialReflectionDataHolder.data;
+});
+
 class ReflectionEditPage extends ConsumerStatefulWidget {
   final String? id;
   const ReflectionEditPage({super.key, this.id});
@@ -20,34 +60,61 @@ class ReflectionEditPage extends ConsumerStatefulWidget {
 
 class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
   final _title = TextEditingController();
-  final _what = TextEditingController();
-  final _soWhat = TextEditingController();
-  final _nowWhat = TextEditingController();
-  final _tags = TextEditingController();
+  final _reflection = TextEditingController();
   List<int> _selectedDomains = [];
   Reflection? _model;
 
+  bool _hasLoaded = false;
+  
   Future<void> _load() async {
-    if (widget.id == null) return;
-    final repo = ref.read(reflectionRepositoryProvider);
-    final m = await repo.get(widget.id!);
-    if (m != null){
-      _model = m;
-      _title.text = m.title;
-      _what.text = m.what;
-      _soWhat.text = m.soWhat;
-      _nowWhat.text = m.nowWhat;
-      _tags.text = m.tags.join(', ');
-      _selectedDomains = m.domains ?? [];
-      setState((){});
+    if (widget.id != null) {
+      // Loading existing reflection
+      final repo = ref.read(reflectionRepositoryProvider);
+      final m = await repo.get(widget.id!);
+      if (m != null){
+        _model = m;
+        _title.text = m.title;
+        // Combine what, soWhat, and nowWhat into single reflection field
+        final reflectionParts = <String>[];
+        if (m.what.isNotEmpty) reflectionParts.add(m.what);
+        if (m.soWhat.isNotEmpty) reflectionParts.add(m.soWhat);
+        if (m.nowWhat.isNotEmpty) reflectionParts.add(m.nowWhat);
+        _reflection.text = reflectionParts.join('\n\n');
+        _selectedDomains = m.domains ?? [];
+        setState((){});
+      }
+    } else {
+      // New reflection - check for initial data
+      final initialData = ref.read(initialReflectionDataProvider);
+      if (initialData != null) {
+        _title.text = initialData.title ?? '';
+        // Combine what, soWhat, and nowWhat into single reflection field
+        final reflectionParts = <String>[];
+        if (initialData.what?.isNotEmpty == true) reflectionParts.add(initialData.what!);
+        if (initialData.soWhat?.isNotEmpty == true) reflectionParts.add(initialData.soWhat!);
+        if (initialData.nowWhat?.isNotEmpty == true) reflectionParts.add(initialData.nowWhat!);
+        _reflection.text = reflectionParts.join('\n\n');
+        _selectedDomains = initialData.domains ?? [];
+        setState((){});
+        
+        // Clear the initial data after using it
+        initialReflectionDataHolder.clear();
+      }
+    }
+    _hasLoaded = true;
+  }
+
+  @override 
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_hasLoaded) {
+      _load();
     }
   }
 
-  @override void initState(){ super.initState(); _load(); }
-
   Future<void> _save() async {
     // Check for PHI before saving
-    final combinedText = '${_title.text} ${_what.text} ${_soWhat.text} ${_nowWhat.text}';
+    final combinedText = '${_title.text} ${_reflection.text}';
     
     if (mounted && PhiDetector.containsPhi(combinedText)) {
       final canContinue = await PhiWarningDialog.show(context, combinedText);
@@ -55,25 +122,26 @@ class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
     }
     
     final repo = ref.read(reflectionRepositoryProvider);
-    final tags = _tags.text.split(',')
-      .map((e)=>e.trim()).where((e)=>e.isNotEmpty).toList();
+    // Store the combined reflection text in the 'what' field
+    // Keep soWhat and nowWhat empty for simplicity
+    final reflectionText = _reflection.text.trim();
 
     if (_model == null) {
       await repo.create(
         title: _title.text,
-        what: _what.text,
-        soWhat: _soWhat.text,
-        nowWhat: _nowWhat.text,
-        tags: tags,
+        what: reflectionText,
+        soWhat: '', // Empty - all content in 'what'
+        nowWhat: '', // Empty - all content in 'what'
+        tags: const [], // No tags field in UI anymore
         domains: _selectedDomains.isEmpty ? null : _selectedDomains,
       );
     } else {
       final m = _model!.copyWith(
         title: _title.text,
-        what: _what.text,
-        soWhat: _soWhat.text,
-        nowWhat: _nowWhat.text,
-        tags: tags,
+        what: reflectionText,
+        soWhat: '', // Empty - all content in 'what'
+        nowWhat: '', // Empty - all content in 'what'
+        tags: const [], // Preserve existing tags or empty
         domains: _selectedDomains.isEmpty ? null : _selectedDomains,
       );
       await repo.update(m.id, m);
@@ -155,9 +223,12 @@ class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
     final template = await TemplatePickerDialog.show(context);
     if (template != null && mounted) {
       setState(() {
-        if (template.whatPrompt.isNotEmpty) _what.text = template.whatPrompt;
-        if (template.soWhatPrompt.isNotEmpty) _soWhat.text = template.soWhatPrompt;
-        if (template.nowWhatPrompt.isNotEmpty) _nowWhat.text = template.nowWhatPrompt;
+        // Combine all template prompts into single reflection field
+        final reflectionParts = <String>[];
+        if (template.whatPrompt.isNotEmpty) reflectionParts.add(template.whatPrompt);
+        if (template.soWhatPrompt.isNotEmpty) reflectionParts.add(template.soWhatPrompt);
+        if (template.nowWhatPrompt.isNotEmpty) reflectionParts.add(template.nowWhatPrompt);
+        _reflection.text = reflectionParts.join('\n\n');
         if (template.suggestedDomains.isNotEmpty) {
           _selectedDomains = List.from(template.suggestedDomains);
         }
@@ -173,7 +244,7 @@ class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
     final isEdit = widget.id != null;
     final canRunSelfPlay = isEdit && 
       _title.text.isNotEmpty && 
-      _what.text.isNotEmpty;
+      _reflection.text.isNotEmpty;
     
     return Scaffold(
       appBar: AppBar(
@@ -191,10 +262,11 @@ class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
             ),
           HelpButton(
             title: 'Reflection Guide',
-            content: 'Use the What/So What/Now What framework to structure your reflection:\n\n'
-                '• What: Describe what happened objectively\n'
-                '• So What: Analyze the significance and your learning\n'
-                '• Now What: Identify actions for future practice\n\n'
+            content: 'Write your reflection in the text box below. You can include:\n\n'
+                '• What happened (objective description)\n'
+                '• Your thoughts and analysis\n'
+                '• Learning points and significance\n'
+                '• Actions for future practice\n\n'
                 'Select GMC domains to show which areas of practice this reflection addresses.',
             tips: [
               'Avoid patient identifiers - use "a patient" or age ranges',
@@ -313,41 +385,14 @@ class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
           ),
           const SizedBox(height: 12),
           TextField(
-            controller: _what,
+            controller: _reflection,
             decoration: const InputDecoration(
-              labelText: 'What happened?',
+              labelText: 'Your reflection',
               border: OutlineInputBorder(),
+              alignLabelWithHint: true,
             ),
-            maxLines: 6,
-            minLines: 4,
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _soWhat,
-            decoration: const InputDecoration(
-              labelText: 'So what? (Analysis)',
-              border: OutlineInputBorder(),
-            ),
-            maxLines: 6,
-            minLines: 4,
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _nowWhat,
-            decoration: const InputDecoration(
-              labelText: 'Now what? (Action)',
-              border: OutlineInputBorder(),
-            ),
-            maxLines: 6,
-            minLines: 4,
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _tags,
-            decoration: const InputDecoration(
-              labelText: 'Tags (comma separated)',
-              border: OutlineInputBorder(),
-            ),
+            maxLines: 15,
+            minLines: 10,
           ),
           const SizedBox(height: 16),
           GmcDomainSelector(
@@ -372,7 +417,7 @@ class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
+                    color: Colors.black.withValues(alpha: 0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
