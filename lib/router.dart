@@ -12,6 +12,8 @@ import 'features/auth/signup_page.dart';
 import 'features/profile/profile_page.dart';
 import 'features/settings/settings_page.dart';
 import 'features/learning_loops/presentation/learning_loop_page.dart';
+import 'features/metanoia/presentation/metanoia_reflections_list_page.dart';
+import 'features/metanoia/presentation/metanoia_reflection_edit_page.dart';
 
 GoRouter createRouter() => GoRouter(
   initialLocation: '/',
@@ -54,5 +56,10 @@ GoRouter createRouter() => GoRouter(
     GoRoute(path: '/export', builder: (c, s) => const ExportPage()),
     GoRoute(path: '/profile', builder: (c, s) => const ProfilePage()),
     GoRoute(path: '/settings', builder: (c, s) => const SettingsPage()),
+    
+    // Metanoia reflection routes
+    GoRoute(path: '/metanoia', builder: (c, s) => const MetanoiaReflectionsListPage()),
+    GoRoute(path: '/metanoia/new', builder: (c, s) => const MetanoiaReflectionEditPage()),
+    GoRoute(path: '/metanoia/:id', builder: (c, s) => MetanoiaReflectionEditPage(id: s.pathParameters['id'])),
   ],
 );

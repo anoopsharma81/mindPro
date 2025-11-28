@@ -112,13 +112,13 @@ class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
     }
   }
 
-  Future<void> _save() async {
+  Future<Reflection?> _save({bool navigateAway = true}) async {
     // Check for PHI before saving
     final combinedText = '${_title.text} ${_reflection.text}';
     
     if (mounted && PhiDetector.containsPhi(combinedText)) {
       final canContinue = await PhiWarningDialog.show(context, combinedText);
-      if (!canContinue) return; // User chose to review text
+      if (!canContinue) return null; // User chose to review text
     }
     
     final repo = ref.read(reflectionRepositoryProvider);
@@ -126,8 +126,9 @@ class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
     // Keep soWhat and nowWhat empty for simplicity
     final reflectionText = _reflection.text.trim();
 
+    Reflection? savedReflection;
     if (_model == null) {
-      await repo.create(
+      savedReflection = await repo.create(
         title: _title.text,
         what: reflectionText,
         soWhat: '', // Empty - all content in 'what'
@@ -135,6 +136,8 @@ class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
         tags: const [], // No tags field in UI anymore
         domains: _selectedDomains.isEmpty ? null : _selectedDomains,
       );
+      // Update _model so we can reload if needed
+      _model = savedReflection;
     } else {
       final m = _model!.copyWith(
         title: _title.text,
@@ -144,9 +147,15 @@ class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
         tags: const [], // Preserve existing tags or empty
         domains: _selectedDomains.isEmpty ? null : _selectedDomains,
       );
-      await repo.update(m.id, m);
+      savedReflection = await repo.update(m.id, m);
+      _model = savedReflection;
     }
-    if (mounted) context.go('/reflections');
+    
+    if (navigateAway && mounted) {
+      context.go('/reflections');
+    }
+    
+    return savedReflection;
   }
 
   Future<void> _delete() async {
@@ -192,29 +201,47 @@ class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
   }
 
   Future<void> _openSelfPlay() async {
-    // Save current state first
-    await _save();
+    // Validate we have content
+    if (_title.text.trim().isEmpty || _reflection.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please add a title and reflection text before improving'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
     
-    // Reload to get the saved reflection
-    if (widget.id != null) {
-      final repo = ref.read(reflectionRepositoryProvider);
-      final reflection = await repo.get(widget.id!);
-      
-      if (reflection != null && mounted) {
-        // Navigate to self-play runner
-        final improved = await Navigator.of(context).push<bool>(
-          MaterialPageRoute(
-            builder: (context) => SelfPlayRunner(
-              reflectionId: widget.id!,
-              reflection: reflection,
-            ),
+    // Save current state first (creates reflection if new, updates if existing)
+    // Don't navigate away - we want to stay on this page
+    final savedReflection = await _save(navigateAway: false);
+    
+    if (savedReflection == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to save reflection for improvement'),
+            backgroundColor: Colors.red,
           ),
         );
-        
-        // Reload if improved
-        if (improved == true) {
-          await _load();
-        }
+      }
+      return;
+    }
+    
+    if (mounted) {
+      // Navigate to self-play runner
+      final improved = await Navigator.of(context).push<bool>(
+        MaterialPageRoute(
+          builder: (context) => SelfPlayRunner(
+            reflectionId: savedReflection.id,
+            reflection: savedReflection,
+          ),
+        ),
+      );
+      
+      // Reload if improved
+      if (improved == true && mounted) {
+        await _load();
       }
     }
   }
@@ -242,8 +269,8 @@ class _ReflectionEditPageState extends ConsumerState<ReflectionEditPage> {
   @override
   Widget build(BuildContext context) {
     final isEdit = widget.id != null;
-    final canRunSelfPlay = isEdit && 
-      _title.text.isNotEmpty && 
+    // Show button whenever there's content, not just when saved
+    final canRunSelfPlay = _title.text.isNotEmpty && 
       _reflection.text.isNotEmpty;
     
     return Scaffold(

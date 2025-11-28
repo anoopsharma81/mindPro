@@ -1,0 +1,10 @@
+Generate a Metanoia reflection from the following case notes:
+
+{{caseNotes}}
+
+{{#if domain}}
+Clinical domain: {{domain}}
+{{/if}}
+
+Analyze this case and create a structured Metanoia reflection following the framework. Be thorough, specific, and focus on clinical learning and decision-making patterns.
+

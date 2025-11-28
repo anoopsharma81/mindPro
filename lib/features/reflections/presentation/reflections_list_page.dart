@@ -179,6 +179,36 @@ class _ReflectionsListPageState extends ConsumerState<ReflectionsListPage> {
                 );
               },
             ),
+            const Divider(),
+            
+            // Metanoia reflection option
+            ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.teal.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(Icons.psychology, color: Colors.teal.shade700),
+              ),
+              title: const Text(
+                'Metanoia Reflection',
+                style: TextStyle(
+                  color: Color(0xFFF5F3F0),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              subtitle: Text(
+                'Structured clinical reflection framework',
+                style: TextStyle(
+                  color: const Color(0xFFF5F3F0).withValues(alpha: 0.7),
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                context.go('/metanoia/new');
+              },
+            ),
             const SizedBox(height: 8),
           ],
         ),

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -9,6 +10,7 @@ import '../reflections/presentation/reflection_from_document_page.dart';
 import '../reflections/presentation/reflection_edit_page.dart';
 import '../../services/api_service.dart';
 import '../../core/logger.dart';
+import '../../common/utils/text_validator.dart';
 
 class DashboardPage extends ConsumerStatefulWidget {
   const DashboardPage({super.key});
@@ -52,161 +54,136 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
   }
   
   Future<void> _createReflectionFromText(String text) async {
-    if (text.trim().isEmpty) return;
+    final inputText = text.trim();
+    if (inputText.isEmpty) return;
     
     setState(() {
       _isProcessing = true;
     });
     
-    try {
-      final apiService = ApiService();
-      final inputText = text.trim();
-      Logger.info('Creating reflection from text input: "$inputText"');
-      
-      if (inputText.isEmpty) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Please enter some text to create a reflection'),
-              backgroundColor: Colors.orange,
-            ),
+    // Always ensure we have the input text to use as fallback
+    String finalTitle = inputText.length > 50 ? '${inputText.substring(0, 50)}...' : inputText;
+    String finalReflection = inputText;
+    List<String> finalTags = [];
+    List<int>? finalDomains;
+    
+    // First, check if input text is meaningful
+    final isInputMeaningful = TextValidator.isMeaningful(inputText);
+    Logger.info('Input text meaningful check: $isInputMeaningful');
+    
+    // If input is not meaningful, skip AI and use input directly
+    if (!isInputMeaningful) {
+      Logger.info('Input text appears nonsensical, using input directly without AI processing');
+      // Use input text as-is (already set above)
+    } else {
+      // Input is meaningful, try AI processing
+      try {
+        final apiService = ApiService();
+        Logger.info('Creating reflection from text input: "$inputText"');
+        
+        // Try to get AI-structured response with timeout
+        try {
+          Logger.info('Calling structureTranscription API with input: "$inputText"');
+          final structured = await apiService.structureTranscription(
+            transcription: inputText,
+          ).timeout(
+            const Duration(seconds: 30),
+            onTimeout: () {
+              Logger.warning('API call timed out after 30 seconds');
+              throw TimeoutException('API call timed out');
+            },
           );
+          
+          Logger.info('API Response received: $structured');
+          
+          // Handle both response formats:
+          // 1. Firebase function returns: { success: true, reflection: { title, what, ... } }
+          // 2. Backend server returns: { title, what, soWhat, ... }
+          final reflectionData = (structured['reflection'] as Map<String, dynamic>?) ?? structured;
+          
+          Logger.info('Reflection data extracted: $reflectionData');
+          
+          // Extract values
+          final title = reflectionData['title'] as String?;
+          final what = reflectionData['what'] as String?;
+          final soWhat = reflectionData['soWhat'] as String?;
+          final nowWhat = reflectionData['nowWhat'] as String?;
+          final tags = reflectionData['tags'] as List?;
+          final suggestedDomains = reflectionData['suggestedDomains'] as List?;
+          
+          Logger.info('Parsed - title: "$title", what: "${what?.substring(0, what.length > 50 ? 50 : what.length)}..."');
+          
+          // Validate that AI response actually relates to the input
+          final responseIsRelevant = TextValidator.responseRelatesToInput(inputText, title, what);
+          Logger.info('AI response relevance check: $responseIsRelevant');
+          
+          if (!responseIsRelevant) {
+            Logger.warning('AI response appears generic/unrelated to input, using input text directly');
+            // Use input text as-is (already set above)
+          } else {
+            // Response is relevant, use AI-generated content
+            // Use AI-generated content if available and different from input
+            if (title != null && title.isNotEmpty && title != inputText) {
+              finalTitle = title;
+            }
+            
+            // Combine what, soWhat, and nowWhat
+            final reflectionParts = <String>[];
+            if (what != null && what.isNotEmpty && what != inputText) {
+              reflectionParts.add(what);
+            }
+            if (soWhat != null && soWhat.isNotEmpty) {
+              reflectionParts.add(soWhat);
+            }
+            if (nowWhat != null && nowWhat.isNotEmpty) {
+              reflectionParts.add(nowWhat);
+            }
+            
+            // Only use AI-structured content if it's different from input
+            if (reflectionParts.isNotEmpty) {
+              finalReflection = reflectionParts.join('\n\n');
+            }
+            
+            if (tags != null) {
+              finalTags = tags.cast<String>();
+            }
+            if (suggestedDomains != null) {
+              finalDomains = suggestedDomains.cast<int>();
+            }
+            
+            Logger.info('Using AI-generated title: "$finalTitle", reflection length: ${finalReflection.length}');
+          }
+        } catch (e) {
+          Logger.warning('API call failed, using input text directly: $e');
+          // Continue with input text as fallback (already set above)
         }
-        return;
+      } catch (e, stack) {
+        Logger.error('Failed to create reflection from text', e, stack);
+        // Continue with input text as fallback
       }
-      
-      // Use the structureTranscription API (it works for any text input)
-      Logger.info('Calling structureTranscription API with input: "$inputText"');
-      final structured = await apiService.structureTranscription(
-        transcription: inputText,
+    }
+    
+    // Always set the data, even if API failed
+    if (mounted) {
+      initialReflectionDataHolder.setData(
+        InitialReflectionData(
+          title: finalTitle,
+          what: finalReflection,
+          soWhat: '',
+          nowWhat: '',
+          tags: finalTags,
+          domains: finalDomains,
+        ),
       );
       
-      // Log the full response to debug
-      Logger.info('API Response received: $structured');
-      
-      // Handle both response formats:
-      // 1. Firebase function returns: { success: true, reflection: { title, what, ... } }
-      // 2. Backend server returns: { title, what, soWhat, ... }
-      final reflectionData = (structured['reflection'] as Map<String, dynamic>?) ?? structured;
-      
-      Logger.info('Reflection data extracted: $reflectionData');
-      
-      // Extract values with proper null checking
-      final title = reflectionData['title'] as String?;
-      final what = reflectionData['what'] as String?;
-      final soWhat = reflectionData['soWhat'] as String?;
-      final nowWhat = reflectionData['nowWhat'] as String?;
-      final tags = reflectionData['tags'] as List?;
-      final suggestedDomains = reflectionData['suggestedDomains'] as List?;
-      
-      Logger.info('Parsed values - title: "$title", what: "${what?.substring(0, what.length > 50 ? 50 : what.length)}..."');
-      
-      // Debug: Show what we received (in debug mode)
-      Logger.info('=== API RESPONSE DEBUG ===');
-      Logger.info('Input text: "$inputText"');
-      Logger.info('Response title: "$title"');
-      Logger.info('Response what: "${what?.substring(0, what.length > 100 ? 100 : what.length)}..."');
-      Logger.info('Response soWhat: "${soWhat?.substring(0, soWhat.length > 50 ? 50 : soWhat.length)}..."');
-      Logger.info('Response nowWhat: "${nowWhat?.substring(0, nowWhat.length > 50 ? 50 : nowWhat.length)}..."');
-      Logger.info('Full response: $structured');
-      Logger.info('Reflection data: $reflectionData');
-      Logger.info('========================');
-      
-      // Validate that we got some data back
-      // Accept the response if we have either a title or what field
-      final hasValidContent = (title != null && title.isNotEmpty) || 
-                              (what != null && what.isNotEmpty);
-      
-      if (!hasValidContent) {
-        Logger.warning('API response appears invalid - no title or what field. Using input text directly.');
-        Logger.warning('Full response was: $structured');
-        // If API didn't return meaningful structured data, use the input text directly
-        if (mounted) {
-          initialReflectionDataHolder.setData(
-            InitialReflectionData(
-              title: inputText.length > 50 ? '${inputText.substring(0, 50)}...' : inputText,
-              what: inputText,
-              soWhat: '',
-              nowWhat: '',
-              tags: [],
-              domains: null,
-            ),
-          );
-          context.go('/reflections/new');
-        }
-        return;
-      }
-      
-      // Combine what, soWhat, and nowWhat into single reflection text
-      final reflectionParts = <String>[];
-      if (what != null && what.isNotEmpty) reflectionParts.add(what);
-      if (soWhat != null && soWhat.isNotEmpty) reflectionParts.add(soWhat);
-      if (nowWhat != null && nowWhat.isNotEmpty) reflectionParts.add(nowWhat);
-      final combinedReflection = reflectionParts.isNotEmpty 
-          ? reflectionParts.join('\n\n')
-          : inputText;
-      
-      Logger.info('AI structured reflection created - title: "${title ?? 'New Reflection'}", reflection length: ${combinedReflection.length}');
-      
-      // Use the title from API, or create one from input if not provided
-      // Don't reject titles that match fallback values - they might be valid
-      final finalTitle = title?.isNotEmpty == true 
-          ? title!
-          : (inputText.length > 50 ? '${inputText.substring(0, 50)}...' : inputText);
-      
-      // Set initial data in provider and navigate
-      if (mounted) {
-        initialReflectionDataHolder.setData(
-          InitialReflectionData(
-            title: finalTitle,
-            what: combinedReflection,
-            soWhat: '', // Empty - all content in 'what'
-            nowWhat: '', // Empty - all content in 'what'
-            tags: tags?.cast<String>() ?? [],
-            domains: suggestedDomains?.cast<int>(),
-          ),
-        );
-        
-        context.go('/reflections/new');
-      }
-    } catch (e, stack) {
-      Logger.error('Failed to create reflection from text', e, stack);
-      if (mounted) {
-        // Show detailed error to user
-        final errorMessage = e.toString();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to create reflection: ${errorMessage.length > 100 ? '${errorMessage.substring(0, 100)}...' : errorMessage}'),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 8),
-            action: SnackBarAction(
-              label: 'Use text directly',
-              textColor: Colors.white,
-              onPressed: () {
-                // Fallback: use input text directly
-                initialReflectionDataHolder.setData(
-                  InitialReflectionData(
-                    title: text.trim().length > 50 ? '${text.trim().substring(0, 50)}...' : text.trim(),
-                    what: text.trim(),
-                    soWhat: '',
-                    nowWhat: '',
-                    tags: [],
-                    domains: null,
-                  ),
-                );
-                context.go('/reflections/new');
-              },
-            ),
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isProcessing = false;
-          _searchController.clear();
-        });
-      }
+      context.go('/reflections/new');
+    }
+    
+    if (mounted) {
+      setState(() {
+        _isProcessing = false;
+        _searchController.clear();
+      });
     }
   }
   
@@ -313,6 +290,20 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                     );
                   },
                 );
+              },
+            ),
+            const Divider(color: Color(0xFFF5F3F0), height: 1),
+            
+            // Metanoia reflection option
+            _buildOption(
+              context: sheetContext,
+              icon: Icons.psychology,
+              title: 'Metanoia Reflection',
+              subtitle: 'Structured clinical reflection framework',
+              color: Colors.teal,
+              onTap: () {
+                Navigator.pop(sheetContext);
+                context.go('/metanoia/new');
               },
             ),
             const SizedBox(height: 8),
